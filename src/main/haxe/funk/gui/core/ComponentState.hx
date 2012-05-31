@@ -49,7 +49,7 @@ class ComponentState {
 	}
 	
 	private function notify(type : ComponentStateType) : Void {
-		_siginal.dispatch(this, type);
+		_signal.dispatch(this, type);
 	}
 	
 	private function setEnabled(value : Bool) : Bool {
@@ -57,6 +57,7 @@ class ComponentState {
 			enabled = value;
 			notify(UPDATE_ENABLED);
 		}
+		return enabled;
 	}
 	
 	private function setHovered(value : Bool) : Bool {
@@ -64,6 +65,7 @@ class ComponentState {
 			hovered = value;
 			notify(UPDATE_HOVERED);
 		}
+		return hovered;
 	}
 	
 	private function setFocused(value : Bool) : Bool {
@@ -71,6 +73,7 @@ class ComponentState {
 			focused = value;
 			notify(UPDATE_FOCUSED);
 		}
+		return focused;
 	}
 	
 	private function setPressed(value : Bool) : Bool {
@@ -78,5 +81,6 @@ class ComponentState {
 			pressed = value;
 			notify(UPDATE_PRESSED);
 		}
+		return pressed;
 	}
 }
