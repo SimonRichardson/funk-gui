@@ -11,7 +11,7 @@ class ComponentStateObserver implements IComponentStateObserver {
 	
 	private var _component : IComponent;
 	
-	private var _componentNS : ComponentNamespace;
+	private var _componentNS : ComponentDispatchEventNamespace;
 	
 	public function new(component : IComponent) {
 		_component = component;

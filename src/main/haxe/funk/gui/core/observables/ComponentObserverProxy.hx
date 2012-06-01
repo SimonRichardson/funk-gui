@@ -1,14 +1,9 @@
-package funk.gui.core;
+package funk.gui.core.observables;
 
 import funk.gui.core.events.ComponentEvent;
 import funk.signal.Signal1;
 
-interface IComponentObserver {
-	
-	function onComponentEvent(event : ComponentEvent) : Void;	
-}
-
-class ComponentObserverProxy {
+class ComponentObserverProxy implements IComponentObserver {
 	
 	public var componentEventSignal : ISignal1<ComponentEvent>;
 	

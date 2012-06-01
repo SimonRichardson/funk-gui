@@ -1,7 +1,7 @@
 package funk.gui.core;
 
 import funk.gui.core.Component;
-import funk.gui.core.ComponentModel;
+import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentState;
 
 interface IComponentView {

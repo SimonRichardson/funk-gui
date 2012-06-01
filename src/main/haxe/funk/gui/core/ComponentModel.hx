@@ -1,26 +1,10 @@
 package funk.gui.core;
 
-import funk.gui.core.Container;
-import funk.gui.core.ComponentObserver;
+import funk.gui.core.IContainer;
+import funk.gui.core.IComponentModel;
+import funk.gui.core.IComponentModelObserver;
+import funk.gui.core.IComponentObserver;
 import funk.signal.Signal2;
-
-interface IComponentModel {
-	
-	var id(dynamic, dynamic) : Int;
-	
-	var parent(dynamic, dynamic) : IContainer;
-	
-	var editMode(dynamic, dynamic) : Bool;
-	
-	function addComponentModelObserver(observer : IComponentModelObserver) : Void;
-	
-	function removeComponentModelObserver(observer : IComponentModelObserver) : Void;
-}
-
-interface IComponentModelObserver {
-	
-	function onComponentModelUpdate(model : IComponentModel, type : Int) : Void;
-}
 
 typedef ComponentModelNamespace = {
 	function notify(type : Int) : Void;

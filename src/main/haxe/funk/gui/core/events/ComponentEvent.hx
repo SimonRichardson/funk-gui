@@ -5,16 +5,28 @@ import funk.option.Option;
 
 using funk.option.Option;
 
-enum ComponentEventType {
-	UNDEFINED;
-	PRESS;
-	RELEASE;
-	HOVER_IN;
-	HOVER_OUT;
-	FOCUS_IN;
-	FOCUS_OUT;
-	ENABLE;
-	DISABLE;
+class ComponentEventType {
+	
+	public static var UNDEFINED : ComponentEventType = new ComponentEventType();
+	
+	public static var PRESS : ComponentEventType = new ComponentEventType();
+	
+	public static var RELEASE : ComponentEventType = new ComponentEventType();
+	
+	public static var HOVER_IN : ComponentEventType = new ComponentEventType();
+	
+	public static var HOVER_OUT : ComponentEventType = new ComponentEventType();
+	
+	public static var FOCUS_IN : ComponentEventType = new ComponentEventType();
+	
+	public static var FOCUS_OUT : ComponentEventType = new ComponentEventType();
+	
+	public static var ENABLE : ComponentEventType = new ComponentEventType();
+	
+	public static var DISABLE : ComponentEventType = new ComponentEventType();
+	
+	private function new(){
+	}
 }
 
 class ComponentEvent {
@@ -38,7 +50,6 @@ class ComponentEvent {
 	public function reset(value : ComponentEventType) : Void {
 		_type = value;
 		_component = _defaultComponent.getOrElse(function():IComponent {
-			// TODO (Simon) : Should we pass null
 			return null;
 		});
 	}

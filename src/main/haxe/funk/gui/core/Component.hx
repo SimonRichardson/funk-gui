@@ -1,9 +1,10 @@
 package funk.gui.core;
 
 import funk.gui.core.ComponentModel;
-import funk.gui.core.ComponentObserver;
-import funk.gui.core.ComponentView;
 import funk.gui.core.ComponentState;
+import funk.gui.core.IComponentModelObserver;
+import funk.gui.core.IComponentObserver;
+import funk.gui.core.IComponentView;
 import funk.gui.core.events.ComponentEvent;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentStateObserver;
@@ -11,6 +12,7 @@ import funk.errors.AbstractMethodError;
 import funk.errors.ArgumentError;
 import funk.option.Any;
 import funk.signal.Signal1;
+import funk.errors.IllegalOperationError;
 
 using funk.option.Any;
 
@@ -18,9 +20,9 @@ interface IComponent {
 	
 	var model(dynamic, dynamic) : IComponentModel;
 	
-	var state(dynamic, dynamic) : ComponentState;
-	
 	var view(dynamic, dynamic) : IComponentView;
+	
+	var state(dynamic, dynamic) : ComponentState;
 	
 	function addComponentObserver(observer : IComponentObserver) : IComponentObserver;
 	
@@ -31,13 +33,9 @@ interface IComponent {
 	function resizeTo(width : Float, height : Float) : Void;
 }
 
-typedef ComponentNamespace = {
+typedef ComponentDispatchEventNamespace = {
 	
-	var event(dynamic, dynamic) : ComponentEvent;
-	
-	function initComponent(componentView : IComponentView) : Void;
-	
-	function dispatchComponentEvent(type : ComponentEventType) : Void;
+	function dispatchComponentEvent(type : ComponentEventType) : Void;	
 }
 
 class Component implements IComponent {
@@ -55,6 +53,12 @@ class Component implements IComponent {
 	private var _state : ComponentState;
 	
 	private var _view : IComponentView;
+	
+	private var _modelType : Class<IComponentModel>;
+	
+	private var _stateType : Class<ComponentState>;
+	
+	private var _viewType : Class<IComponentView>;
 	
 	private var _signal : ISignal1<ComponentEvent>;
 	
@@ -103,13 +107,22 @@ class Component implements IComponent {
 		}
 	}
 	
-	@:final
 	private function initComponent(componentView : IComponentView) : Void {
+		initTypes();
+		
+		if(_viewType.isEmpty()) throw new IllegalOperationError("View type can not be null");
+		if(_modelType.isEmpty()) throw new IllegalOperationError("View type can not be null");
+		if(_stateType.isEmpty()) throw new IllegalOperationError("View type can not be null");
+		
 		initModel();
 		initState();
 		initEvents();
 		
 		initView(componentView);
+	}
+	
+	private function initTypes() : Void {
+		throw new AbstractMethodError("initTypes");
 	}
 	
 	private function initModel() : Void {
@@ -129,6 +142,26 @@ class Component implements IComponent {
 			throw new ArgumentError("Trying to initialize component with a null view.");
 			return null;
 		});
+	}
+	
+	@:final 
+	private function allowModelType(value : Class<IComponentModel>) : Void {
+		_modelType = value;
+	}
+	
+	@:final 
+	private function allowStateType(value : Class<ComponentState>) : Void {
+		_stateType = value;
+	}
+	
+	@:final 
+	private function allowViewType(value : Class<IComponentView>) : Void {
+		_viewType = value;
+	}
+	
+	private function dispatchComponentEvent(type : ComponentEventType) : Void {
+		_componentEvent.reset(type);
+		_signal.dispatch(_componentEvent);
 	}
 	
 	private function get_event() : ComponentEvent {
