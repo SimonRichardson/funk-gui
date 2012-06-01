@@ -30,7 +30,7 @@ class ComponentEvent {
 	private var _type : ComponentEventType;
 	
 	public function new(component : IComponent, ?componentType : ComponentEventType) {
-		_component = Some(component);
+		_defaultComponent = Some(component);
 		
 		reset(componentType);
 	}
