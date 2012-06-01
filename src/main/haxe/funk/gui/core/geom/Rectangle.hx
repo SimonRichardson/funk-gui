@@ -24,4 +24,10 @@ class Rectangle {
 		this.width = w;
 		this.height = h;
 	}
+	
+	public function containsPoint(point : Point) : Bool {
+		var px = point.x;
+		var py = point.y;
+		return (px >= x && px <= width && py >= y && py <= height);
+	}
 }

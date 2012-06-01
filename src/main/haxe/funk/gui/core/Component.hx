@@ -23,11 +23,23 @@ typedef ComponentDispatchEventNamespace = {
 
 class Component implements IComponent {
 	
+	public var id(get_id, set_id) : Int;
+	
+	public var parent(get_parent, set_parent) : IContainer;
+	
 	public var model(get_model, set_model) : IComponentModel;
 	
 	public var state(get_state, set_state) : ComponentState;
 	
 	public var view(get_view, set_view) : IComponentView;
+	
+	public var pressed(get_pressed, set_pressed) : Bool;
+	
+	public var hovered(get_hovered, set_hovered) : Bool;
+	
+	public var focused(get_focused, set_focused) : Bool;
+	
+	public var enabled(get_enabled, set_enabled) : Bool;
 	
 	private var event(get_event, set_event) : ComponentEvent;
 	
@@ -53,7 +65,6 @@ class Component implements IComponent {
 	
 	public function new(componentView : IComponentView) {
 		_signal = new Signal1<ComponentEvent>();
-		
 		_stateType = ComponentState;
 		
 		initComponent(componentView);
@@ -237,5 +248,53 @@ class Component implements IComponent {
 		}
 		
 		return componentState;
+	}
+	
+	private function get_id() : Int {
+		return model.id;
+	}
+	
+	private function set_id(value : Int) : Int {
+		return model.id = value;
+	}
+	
+	private function get_parent() : IContainer {
+		return model.parent;
+	}
+	
+	private function set_parent(value : IContainer) : IContainer {
+		return model.parent = value;
+	}
+	
+	private function get_pressed() : Bool {
+		return state.pressed;
+	}
+	
+	private function set_pressed(value : Bool) : Bool {
+		return state.pressed = value;
+	}
+	
+	private function get_hovered() : Bool {
+		return state.hovered;
+	}
+	
+	private function set_hovered(value : Bool) : Bool {
+		return state.hovered = value;
+	}
+	
+	private function get_focused() : Bool {
+		return state.focused;
+	}
+	
+	private function set_focused(value : Bool) : Bool {
+		return state.focused = value;
+	}
+	
+	private function get_enabled() : Bool {
+		return state.enabled;
+	}
+	
+	private function set_enabled(value : Bool) : Bool {
+		return state.enabled = value;
 	}
 }

@@ -7,8 +7,8 @@ import gui.js.ButtonView;
 class Main {
 	
 	public function new(){
-		var view = new ButtonView();
-		var button = new Button(view);
+		var button = new Button(new ButtonView());
+		button.selected = true;
 	}
 	
 	public static function main() : Void {

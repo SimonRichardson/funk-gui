@@ -7,11 +7,23 @@ import funk.gui.core.IComponentView;
 
 interface IComponent {
 	
+	var id(dynamic, dynamic) : Int;
+	
+	var parent(dynamic, dynamic) : IContainer;
+	
 	var model(dynamic, dynamic) : IComponentModel;
 	
 	var view(dynamic, dynamic) : IComponentView;
 	
 	var state(dynamic, dynamic) : ComponentState;
+	
+	var pressed(dynamic, dynamic) : Bool;
+	
+	var hovered(dynamic, dynamic) : Bool;
+	
+	var focused(dynamic, dynamic) : Bool;
+	
+	var enabled(dynamic, dynamic) : Bool;
 	
 	function addComponentObserver(observer : IComponentObserver) : IComponentObserver;
 	
