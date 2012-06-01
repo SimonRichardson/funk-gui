@@ -32,10 +32,6 @@ class ButtonComponent extends Component {
 		event = new ButtonEvent(this);
 	}
 	
-	override private function initView(componentView : IComponentView) : Void {
-		super.initView(componentView);
-	}
-	
 	override private function set_model(componentModel : IComponentModel) : IComponentModel {
 		if(_buttonModel.isDefined()) {
 			_buttonModel.removeComponentModelObserver(_buttonModelObserver);
