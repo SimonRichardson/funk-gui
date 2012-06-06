@@ -1,8 +1,8 @@
-package gui.js;
+package gui.js.display;
 
-import funk.gui.button.Button;
+import funk.gui.button.ToggleButton;
 import funk.gui.button.ButtonModel;
-import funk.gui.button.IButtonView;
+import funk.gui.button.IToggleButtonView;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentModel;
@@ -13,16 +13,16 @@ import js.Lib;
 
 using funk.option.Any;
 
-class ButtonView extends ComponentView, implements IButtonView {
+class ToggleButtonView extends ComponentView, implements IToggleButtonView {
 		
-	private var _button : Button;	
+	private var _toggleButton : ToggleButton;	
 	
 	public function new() {
 		super();
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
-		_button = cast component;
+		_toggleButton = cast component;
 		
 	}
 	
@@ -58,11 +58,11 @@ class ButtonView extends ComponentView, implements IButtonView {
 	}
 	
 	private function repaint() : Void {
-		if(_button.isDefined()) {
+		if(_toggleButton.isDefined()) {
 			
-			if(_button.enabled) {
-				if(_button.hovered) {
-					if(_button.pressed) {
+			if(_toggleButton.enabled) {
+				if(_toggleButton.hovered) {
+					if(_toggleButton.pressed) {
 						
 					} else {
 						

@@ -11,7 +11,9 @@ import funk.gui.core.Component;
 import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
 import funk.gui.core.ComponentView;
+import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.events.ComponentEvent;
+import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.LayoutSize;
 import funk.gui.core.geom.Point;
@@ -28,4 +30,5 @@ import funk.gui.core.IContainer;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentObserverProxy;
 import funk.gui.core.observables.ComponentStateObserver;
+import funk.gui.Root;
 class All{}

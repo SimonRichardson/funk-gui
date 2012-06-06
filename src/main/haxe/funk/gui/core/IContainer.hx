@@ -4,19 +4,19 @@ import funk.gui.core.Component;
 
 interface IContainer implements IComponent {
 	
-	var numComponents(dynamic, never) : Int;
+	var size(dynamic, never) : Int;
 		
-	function addComponent(component : IComponent) : IComponent;
+	function add(component : IComponent) : IComponent;
 
-	function addComponentAt(component : IComponent, index : Int) : IComponent;
+	function addAt(component : IComponent, index : Int) : IComponent;
 
-	function removeComponent(component : IComponent) : IComponent;
+	function remove(component : IComponent) : IComponent;
 
-	function removeComponentAt(index : Int) : IComponent;
+	function removeAt(index : Int) : IComponent;
 
-	function getComponentAt(index : Int) : IComponent;
+	function getAt(index : Int) : IComponent;
 
-	function containsComponent(component : IComponent) : Bool;
+	function contains(component : IComponent) : Bool;
 
-	function getComponentIndex(component : IComponent) : Int;
+	function getIndex(component : IComponent) : Int;
 }
