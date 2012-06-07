@@ -30,5 +30,15 @@ import funk.gui.core.IContainer;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentObserverProxy;
 import funk.gui.core.observables.ComponentStateObserver;
+import funk.gui.core.parameter.IParameterMapping;
+import funk.gui.core.parameter.IParameterObserver;
+import funk.gui.core.parameter.mappings.MappingBoolInt;
+import funk.gui.core.parameter.mappings.MappingFloatBoolean;
+import funk.gui.core.parameter.mappings.MappingFloatFloat;
+import funk.gui.core.parameter.mappings.MappingFloatInt;
+import funk.gui.core.parameter.mappings.MappingFloatlistItem;
+import funk.gui.core.parameter.mappings.MappingIntBool;
+import funk.gui.core.parameter.mappings.MappingIntListItem;
+import funk.gui.core.parameter.Parameter;
 import funk.gui.Root;
 class All{}

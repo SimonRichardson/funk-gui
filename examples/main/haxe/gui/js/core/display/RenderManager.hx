@@ -17,7 +17,6 @@ class RenderManager implements IComponentRenderManager {
 	private var _canvas : HtmlDom;
 	
 	public function new(){
-		
 	}
 	
 	public function onRenderManagerInitialize(root : Root) : Void {

@@ -1,6 +1,8 @@
 package funk.gui.button;
 
 import funk.gui.core.ComponentModel;
+import funk.gui.core.parameter.Parameter;
+import funk.gui.core.parameter.mappings.MappingBoolInt;
 
 class ButtonModel extends ComponentModel {
 	
@@ -14,13 +16,13 @@ class ButtonModel extends ComponentModel {
 	
 	private var _text : String;
 	
-	private var _selected : Bool;
+	private var _selected : Parameter<Bool, Int>;
 	
 	public function new(?text:String = "", ?selected:Bool = false) {
 		super();
 		
 		_text = text;
-		_selected = selected;
+		_selected = new Parameter<Bool, Int>(new MappingBoolInt(), selected);
 	}
 	
 	private function getText() : String {
@@ -37,15 +39,16 @@ class ButtonModel extends ComponentModel {
 	}
 	
 	private function getSelected() : Bool {
-		return _selected;
+		return _selected.value;
 	}
 	
 	private function setSelected(value: Bool) : Bool {
-		if(value != _selected) {
-			_selected = value;
+		if(value != _selected.value) {
+			_selected.value = value;
+			
 			notify(UPDATE_SELECTION);
 		}
 		
-		return _selected;
+		return _selected.value;
 	}
 }
