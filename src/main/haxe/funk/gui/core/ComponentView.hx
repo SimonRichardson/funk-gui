@@ -74,19 +74,24 @@ class ComponentView {
 		}
 	}
 	
+	private function moveTo(x : Float, y : Float) : Void {
+		_bounds.x = x;
+		_bounds.y = y;
+		
+		_innerBounds.x = _bounds.x + _padding.left;
+		_innerBounds.y = _bounds.y + _padding.top;
+		
+		_outerBounds.x = _bounds.x - _margin.left;
+		_outerBounds.y = _bounds.y - _margin.top;
+	}
+	
 	private function resizeTo(width : Float, height : Float) : Void {
-		_bounds.x = 0;
-		_bounds.y = 0;
 		_bounds.width = width;
 		_bounds.height = height;
 		
-		_innerBounds.x = _padding.left;
-		_innerBounds.y = _padding.top;
 		_innerBounds.width = width - (_padding.left + _padding.right);
 		_innerBounds.height = height - (_padding.top + _padding.bottom);
 		
-		_outerBounds.x = -_margin.left;
-		_outerBounds.y = -_margin.top;
 		_outerBounds.width = width + (_margin.left + _margin.right);
 		_outerBounds.height = height + (_margin.top + _margin.bottom);
 	}

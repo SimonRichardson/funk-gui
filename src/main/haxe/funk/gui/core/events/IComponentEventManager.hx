@@ -2,9 +2,9 @@ package funk.gui.core.events;
 
 import funk.gui.Root;
 
-interface IComponentEventManager {
+interface IComponentEventManager<T> {
 	
-	function onEventManagerInitialize(root : Root) : Void;
+	function onEventManagerInitialize(root : Root<T>) : Void;
 	
 	function onEventManagerCleanup() : Void;
 }

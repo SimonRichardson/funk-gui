@@ -2,9 +2,13 @@ package funk.gui.core.display;
 
 import funk.gui.Root;
 
-interface IComponentRenderManager {
+interface IComponentRenderManager<T> {
 	
-	function onRenderManagerInitialize(root : Root) : Void;
+	var context(dynamic, never) : T;
+	
+	function onRenderManagerInitialize(root : Root<T>) : Void;
 	
 	function onRenderManagerCleanup() : Void;
+	
+	function invalidate() : Void;
 }

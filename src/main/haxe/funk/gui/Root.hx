@@ -2,22 +2,25 @@ package funk.gui;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
-import funk.gui.core.IComponent;
 import funk.option.Any;
 import funk.option.Option;
 import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.events.IComponentEventManager;
+import funk.gui.core.IComponent;
+import funk.gui.core.IComponentRoot;
 
 using funk.collections.immutable.Nil;
 using funk.option.Any;
 
-class Root {
+class Root<T> implements IComponentRoot<T> {
 	
 	public var size(get_size, never) : Int;
 	
-	public var eventManager(default, setEventManager) : IComponentEventManager;
+	public var root(get_root, never) : IComponentRoot<T>;
 	
-	public var renderManager(default, setRenderManager) : IComponentRenderManager;
+	public var eventManager(default, setEventManager) : IComponentEventManager<T>;
+	
+	public var renderManager(default, setRenderManager) : IComponentRenderManager<T>;
 	
 	private var _list : IList<IComponent>;
 	
@@ -27,6 +30,7 @@ class Root {
 	
 	public function add(component : IComponent) : IComponent {
 		_list = _list.prepend(component);
+		invalidate();
 		return component;
 	}
 
@@ -47,6 +51,7 @@ class Root {
 				return l;
 			});
 		}
+		invalidate();
 		return component;
 	}
 
@@ -54,6 +59,7 @@ class Root {
 		_list = _list.filter(function(c) : Bool {
 			return c == component;
 		});
+		invalidate();
 		return component;
 	}
 
@@ -68,6 +74,7 @@ class Root {
 			p++;
 			return result;
 		});
+		invalidate();
 		return o;
 	}
 
@@ -86,11 +93,19 @@ class Root {
 		return _list.indexOf(component);
 	}
 	
+	public function invalidate() : Void {
+		renderManager.invalidate();
+	}
+	
 	private function get_size() : Int {
 		return _list.size;
 	}
 	
-	private function setEventManager(value : IComponentEventManager) : IComponentEventManager {
+	private function get_root() : IComponentRoot<T> {
+		return this;
+	}
+	
+	private function setEventManager(value : IComponentEventManager<T>) : IComponentEventManager<T> {
 		if(eventManager.isDefined()) {
 			eventManager.onEventManagerCleanup();
 			eventManager = null;
@@ -103,7 +118,7 @@ class Root {
 		return eventManager;
 	}
 	
-	private function setRenderManager(value : IComponentRenderManager) : IComponentRenderManager {
+	private function setRenderManager(value : IComponentRenderManager<T>) : IComponentRenderManager<T> {
 		if(renderManager.isDefined()) {
 			renderManager.onRenderManagerCleanup();
 			renderManager = null;

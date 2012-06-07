@@ -24,6 +24,7 @@ import funk.gui.core.IComponent;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.IComponentModelObserver;
 import funk.gui.core.IComponentObserver;
+import funk.gui.core.IComponentRoot;
 import funk.gui.core.IComponentView;
 import funk.gui.core.IComponentViewConfig;
 import funk.gui.core.IContainer;
