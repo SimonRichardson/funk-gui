@@ -14,6 +14,8 @@ class ComponentView {
 	public var width(get_width, never) : Float;
 	
 	public var height(get_height, never) : Float;
+
+	public var bounds(get_bounds, never) : Rectangle;
 	
 	private var _bounds : Rectangle;
 	
@@ -110,5 +112,9 @@ class ComponentView {
 	
 	private function get_height() : Float {
 		return _bounds.height;
+	}
+
+	private function get_bounds() : Rectangle {
+		return _bounds.clone();
 	}
 }

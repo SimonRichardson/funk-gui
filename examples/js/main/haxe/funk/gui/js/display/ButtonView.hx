@@ -29,7 +29,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
-		
+		moveTo(x, y);
 	}
 	
 	public function onComponentResize(width : Float, height : Float) : Void {

@@ -14,16 +14,23 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 	
 	public var context(get_context, never) : HTMLCanvasElement;
 	
+	private var _root : Root<HTMLCanvasElement>;
+
 	private var _window : Window;
 
 	private var _document : HTMLDocument;
 	
 	private var _context : HTMLCanvasElement;
+
+	private var _painter : Painter;
 	
 	public function new(){
+		_painter = new Painter();
 	}
 	
 	public function onRenderManagerInitialize(root : Root<HTMLCanvasElement>) : Void {
+		_root = root;
+
 		_window = untyped __js__("window");
 		_document = CommonJS.getHtmlDocument();
 		
@@ -45,7 +52,12 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 	}
 	
 	private function render() : Void {
-		trace("RenderManger - Render");
+		for(component in _root) {
+			if(Std.is(component.view, GraphicsComponentView)) {
+				var view : GraphicsComponentView = cast component.view;
+				_painter.draw(view.graphics, view.bounds);
+			}
+		}
 	}
 
 	private function get_context() : HTMLCanvasElement {

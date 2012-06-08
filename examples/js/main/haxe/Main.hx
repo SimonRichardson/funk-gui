@@ -17,6 +17,8 @@ class Main {
 		root.eventManager = new EventManager();
 		
 		var button = new Button(new ButtonView());
+		button.moveTo(10, 20);
+		button.resizeTo(100, 200);
 		root.add(button);
 		
 		var toggle = new ToggleButton(new ToggleButtonView());

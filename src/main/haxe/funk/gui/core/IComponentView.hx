@@ -3,6 +3,7 @@ package funk.gui.core;
 import funk.gui.core.Component;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentState;
+import funk.gui.core.geom.Rectangle;
 
 interface IComponentView {
 	
@@ -13,6 +14,8 @@ interface IComponentView {
 	var width(dynamic, never) : Float;
 	
 	var height(dynamic, never) : Float;
+
+	var bounds(dynamic, never) : Rectangle;
 	
 	function onComponentInitialize(component : IComponent) : Void;
 	

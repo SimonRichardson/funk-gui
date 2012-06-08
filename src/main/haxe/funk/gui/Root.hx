@@ -96,6 +96,10 @@ class Root<T> implements IComponentRoot<T> {
 	public function invalidate() : Void {
 		renderManager.invalidate();
 	}
+
+	public function iterator() : Iterator<IComponent> {
+		return _list.iterator();
+	}
 	
 	private function get_size() : Int {
 		return _list.size;

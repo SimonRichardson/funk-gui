@@ -14,6 +14,10 @@ class Rectangle {
 		moveTo(x, y);
 		resizeTo(w, h);
 	}
+
+	public function clone() : Rectangle {
+		return new Rectangle(x, y, width, height);
+	}
 	
 	public function moveTo(x : Float, y : Float) : Void {
 		this.x = x;
