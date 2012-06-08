@@ -22,6 +22,9 @@ class Parameter<A, B> {
 		_mapping = mapping;
 		_value = value;
 		_defaultValue = value;
+		
+		_valueSignal = new Signal2<A, A>();
+		_normalisedValueSignal = new Signal2<B, B>();
 	}
 	
 	public function addParameterObserver(observer : IParameterObserver<A, B>) : IParameterObserver<A, B> {

@@ -1,28 +1,30 @@
-package gui.js.display;
+package funk.gui.js.display;
 
-import funk.gui.button.ToggleButton;
+import funk.gui.button.Button;
 import funk.gui.button.ButtonModel;
-import funk.gui.button.IToggleButtonView;
+import funk.gui.button.IButtonView;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
-import funk.gui.core.ComponentView;
 import funk.option.Any;
+
+import funk.gui.js.core.display.GraphicsComponentView;
+
 import js.Lib;
 
 using funk.option.Any;
 
-class ToggleButtonView extends ComponentView, implements IToggleButtonView {
+class ButtonView extends GraphicsComponentView, implements IButtonView {
 		
-	private var _toggleButton : ToggleButton;	
+	private var _button : Button;	
 	
 	public function new() {
 		super();
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
-		_toggleButton = cast component;
+		_button = cast component;
 		
 	}
 	
@@ -58,11 +60,11 @@ class ToggleButtonView extends ComponentView, implements IToggleButtonView {
 	}
 	
 	private function repaint() : Void {
-		if(_toggleButton.isDefined()) {
+		if(_button.isDefined()) {
 			
-			if(_toggleButton.enabled) {
-				if(_toggleButton.hovered) {
-					if(_toggleButton.pressed) {
+			if(_button.enabled) {
+				if(_button.hovered) {
+					if(_button.pressed) {
 						
 					} else {
 						

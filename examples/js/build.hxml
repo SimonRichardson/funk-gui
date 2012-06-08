@@ -1,0 +1,8 @@
+-js ../../bin/js/static/js/Example01.js
+-main Main
+-cp ../../src/main/haxe
+-cp main/haxe
+-debug
+-lib funk
+-lib xirsys_stdjs
+--js-modern
