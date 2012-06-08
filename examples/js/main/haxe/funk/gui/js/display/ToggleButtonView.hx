@@ -29,7 +29,9 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
-		
+		moveTo(x, y);
+
+		repaint();
 	}
 	
 	public function onComponentResize(width : Float, height : Float) : Void {
@@ -62,17 +64,25 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 	private function repaint() : Void {
 		if(_toggleButton.isDefined()) {
 			
+			graphics.clear();
+			graphics.translate(x, y);
+
 			if(_toggleButton.enabled) {
 				if(_toggleButton.hovered) {
 					if(_toggleButton.pressed) {
-						
+						graphics.beginFill(0xff0000);
 					} else {
-						
+						graphics.beginFill(0x0000ff);	
 					}
 				} else {
-					
+					graphics.beginFill(0xff00ff);
 				}
+			} else {
+				graphics.beginFill(0x1d1d1d);
 			}
+
+			graphics.drawRect(0, 0, width, height);
+			graphics.endFill();
 		}
 	}
 }

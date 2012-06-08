@@ -25,7 +25,6 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 	private var _painter : Painter;
 	
 	public function new(){
-		_painter = new Painter();
 	}
 	
 	public function onRenderManagerInitialize(root : Root<HTMLCanvasElement>) : Void {
@@ -39,6 +38,8 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 		_context.className = "gui-hx-canvas";
 		
 		_document.body.appendChild(_context);
+
+		_painter = new Painter(_context.getContext("2d"));
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -55,9 +56,11 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 		for(component in _root) {
 			if(Std.is(component.view, GraphicsComponentView)) {
 				var view : GraphicsComponentView = cast component.view;
-				_painter.draw(view.graphics, view.bounds);
+				_painter.add(view.graphics, view.bounds);
 			}
 		}
+		
+		_painter.render();
 	}
 
 	private function get_context() : HTMLCanvasElement {
