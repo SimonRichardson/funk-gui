@@ -7,6 +7,8 @@ import funk.gui.core.IComponent;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
+import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.geom.Point;
 import funk.option.Any;
 
 import funk.gui.js.core.display.GraphicsComponentView;
@@ -59,6 +61,10 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 	
 	public function onComponentCleanup() : Void {
 		
+	}
+
+	public function captureEventTarget(point : Point) : IComponentEventTarget {
+		return bounds.containsPoint(point) ? this : null;
 	}
 	
 	private function repaint() : Void {

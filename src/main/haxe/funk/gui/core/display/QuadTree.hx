@@ -100,15 +100,15 @@ class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 		return _nodes.indexOf(value);
 	}
 
-	public function queryPoint(value : Point) : IList<T> {
-		return switch(_quad.queryPoint(value)){
+	public function queryPoint(value : IQuadTreePoint) : IList<T> {
+		return switch(_quad.queryPoint(cast value)){
 			case Some(x): x.nodes;
 			case None: nil.list();
 		}
 	}
 
-	public function queryRectangle(value : Rectangle) : IList<T> {
-		return switch(_quad.queryRectangle(value)){
+	public function queryRectangle(value : IQuadTreeRectangle) : IList<T> {
+		return switch(_quad.queryRectangle(cast value)){
 			case Some(x): x.nodes;
 			case None: nil.list();
 		}

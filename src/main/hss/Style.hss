@@ -4,6 +4,8 @@ var textColor = #efefef;
 var default = {
 	background-color: $background;
 	color: $textColor;
+	margin: 0px;
+	padding: 0px;
 }
 
 body {

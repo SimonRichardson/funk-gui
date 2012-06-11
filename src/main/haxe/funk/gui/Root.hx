@@ -9,6 +9,7 @@ import funk.gui.core.display.IComponentRenderManagerObserver;
 import funk.gui.core.display.QuadTree;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
+import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
@@ -31,7 +32,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	private var _quadTree : IQuadTree<IComponent>;
 	
 	public function new() {
-		_quadTree = new QuadTree<IComponent>(0, 0);
+		_quadTree = new QuadTree<IComponent>(250, 250);
 	}
 	
 	public function add(component : IComponent) : IComponent {
@@ -85,12 +86,12 @@ class Root<E> 	implements IComponentRoot<E>,
 		return _quadTree.indexOf(component);
 	}
 
-	public function getComponentsIntersectsPoint(point : Point) : Option<IList<IComponent>> {
-		return None;
+	public function getComponentsIntersectsPoint(point : Point) : IList<IComponent> {
+		return _quadTree.queryPoint(point);
 	}
 
-	public function getComponentsIntersectsRectangle(rect : Rectangle) : Option<IList<IComponent>> {
-		return None;
+	public function getComponentsIntersectsRectangle(rect : Rectangle) : IList<IComponent> {
+		return _quadTree.queryRectangle(rect);
 	}
 	
 	public function invalidate() : Void {
@@ -99,6 +100,17 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	public function iterator() : Iterator<IComponent> {
 		return _quadTree.iterator();
+	}
+
+	public function captureEventTarget(point : Point) : IComponentEventTarget {
+		var items : IList<IComponent> = getComponentsIntersectsPoint(point);
+		for(item in items) {
+			var target : IComponentEventTarget = item.view.captureEventTarget(point);
+			if(target != null) {
+				return target;
+			}
+		}
+		return null;
 	}
 
 	public function onComponentRenderManagerUpdate(	manager : IComponentRenderManager<E>,

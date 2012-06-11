@@ -6,9 +6,9 @@ import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
 import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.events.IComponentEventManager;
-import funk.option.Option;
+import funk.gui.core.events.IComponentEventTarget;
 
-interface IComponentRoot<E> {
+interface IComponentRoot<E> implements IComponentEventTarget {
 
 	var root(dynamic, never) : IComponentRoot<E>;
 
@@ -16,9 +16,9 @@ interface IComponentRoot<E> {
 
 	var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
 
-	function getComponentsIntersectsPoint(point : Point) : Option<IList<IComponent>>;
+	function getComponentsIntersectsPoint(point : Point) : IList<IComponent>;
 
-	function getComponentsIntersectsRectangle(rect : Rectangle) : Option<IList<IComponent>>;
+	function getComponentsIntersectsRectangle(rect : Rectangle) : IList<IComponent>;
 	
 	function invalidate() : Void;
 

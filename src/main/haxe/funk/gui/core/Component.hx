@@ -6,6 +6,8 @@ import funk.gui.core.IComponentModelObserver;
 import funk.gui.core.IComponentObserver;
 import funk.gui.core.IComponentView;
 import funk.gui.core.events.ComponentEvent;
+import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.geom.Point;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentStateObserver;
 import funk.errors.AbstractMethodError;

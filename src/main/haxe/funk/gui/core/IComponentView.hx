@@ -3,9 +3,10 @@ package funk.gui.core;
 import funk.gui.core.Component;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentState;
+import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.Rectangle;
 
-interface IComponentView {
+interface IComponentView implements IComponentEventTarget {
 	
 	var x(dynamic, never) : Float;
 	
