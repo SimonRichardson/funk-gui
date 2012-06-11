@@ -1,5 +1,7 @@
 package funk.gui.core.geom;
 
+import funk.gui.core.geom.Point;
+
 class Rectangle {
 	
 	public var x(default, default) : Float;
@@ -10,7 +12,7 @@ class Rectangle {
 	
 	public var height(default, default) : Float;
 
-	public var left(getLeft, setLeft: Float;
+	public var left(getLeft, setLeft): Float;
 
 	public var right(getRight, setRight) : Float;
 
@@ -112,8 +114,8 @@ class Rectangle {
 	}
 
 	private function setTopLeft(value : Point) : Point {
-		x = p.x;
-		y = p.y;
+		x = value.x;
+		y = value.y;
 		return value;
 	}
 
@@ -122,8 +124,8 @@ class Rectangle {
 	}
 
 	private function setBottomRight(value : Point) : Point {
-		width = p.x - x;
-		height = p.y - y;
+		width = value.x - x;
+		height = value.y - y;
 		return value;
 	}
 }

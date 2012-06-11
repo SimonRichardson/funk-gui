@@ -1,96 +1,92 @@
 package funk.gui;
 
 import funk.collections.IList;
-import funk.collections.immutable.Nil;
+import funk.collections.IQuadTree;
 import funk.option.Any;
 import funk.option.Option;
 import funk.gui.core.display.IComponentRenderManager;
+import funk.gui.core.display.QuadTree;
 import funk.gui.core.events.IComponentEventManager;
+import funk.gui.core.geom.Point;
+import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
 
-using funk.collections.immutable.Nil;
 using funk.option.Any;
 
-class Root<T> implements IComponentRoot<T> {
+class Root<E> implements IComponentRoot<E> {
 	
 	public var size(get_size, never) : Int;
 	
-	public var root(get_root, never) : IComponentRoot<T>;
+	public var root(get_root, never) : IComponentRoot<E>;
 	
-	public var eventManager(default, setEventManager) : IComponentEventManager<T>;
+	public var eventManager(default, setEventManager) : IComponentEventManager<E>;
 	
-	public var renderManager(default, setRenderManager) : IComponentRenderManager<T>;
+	public var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
 	
-	private var _list : IList<IComponent>;
+	private var _quadTree : IQuadTree<IComponent>;
 	
 	public function new() {
-		_list = nil.list();
+		_quadTree = new QuadTree<IComponent>(0, 0);
 	}
 	
 	public function add(component : IComponent) : IComponent {
-		_list = _list.prepend(component);
+		_quadTree = _quadTree.add(component);
+
 		invalidate();
+
 		return component;
 	}
 
 	public function addAt(component : IComponent, index : Int) : IComponent {
-		if(index == 0) {
-			_list = _list.append(component);	
-		} else if(index == size) {
-			_list = _list.prepend(component);
-		} else {
-			var p = 0;
-			_list = _list.flatMap(function(c) : IList<IComponent> {
-				var l = nil.list();
-				l = l.prepend(c);
-				if(p == index) {
-					l = l.prepend(component);
-				}
-				p++;
-				return l;
-			});
-		}
+		_quadTree = _quadTree.addAt(component, index);
+
 		invalidate();
+
 		return component;
 	}
 
 	public function remove(component : IComponent) : IComponent {
-		_list = _list.filter(function(c) : Bool {
-			return c == component;
-		});
+		_quadTree = _quadTree.remove(component);
+
 		invalidate();
+
 		return component;
 	}
 
 	public function removeAt(index : Int) : Option<IComponent> {
-		var p = 0;
-		var o = None;
-		_list = _list.filter(function(c) : Bool {
-			var result = p == index;
-			if(result) {
-				o = Some(c);
-			}
-			p++;
-			return result;
-		});
-		invalidate();
-		return o;
+		var comp : Option<IComponent> = _quadTree.getAt(index);
+		switch(comp){
+			case Some(x):
+				_quadTree = _quadTree.removeAt(index);
+				
+				invalidate();
+			case None:	
+		}
+		return comp;
 	}
 
 	public function getAt(index : Int) : IComponent {
-		return switch(_list.get(index)) {
+		return switch(_quadTree.getAt(index)) {
 			case Some(x): x;
 			case None: null;
 		}
 	}
 
 	public function contains(component : IComponent) : Bool {
-		return _list.contains(component);
+		return _quadTree.contains(component);
 	}
 
 	public function getIndex(component : IComponent) : Int {
-		return _list.indexOf(component);
+		return _quadTree.indexOf(component);
+	}
+
+	public function getComponentsIntersectsPoint(point : Point) : Option<IList<IComponent>> {
+		return None;
+	}
+
+	public function getComponentsIntersectsRectangle(rect : Rectangle) : Option<IList<IComponent>> {
+		return None;
 	}
 	
 	public function invalidate() : Void {
@@ -98,18 +94,19 @@ class Root<T> implements IComponentRoot<T> {
 	}
 
 	public function iterator() : Iterator<IComponent> {
-		return _list.iterator();
+		return _quadTree.iterator();
 	}
 	
 	private function get_size() : Int {
-		return _list.size;
+		return _quadTree.size;
 	}
 	
-	private function get_root() : IComponentRoot<T> {
+	private function get_root() : IComponentRoot<E> {
 		return this;
 	}
 	
-	private function setEventManager(value : IComponentEventManager<T>) : IComponentEventManager<T> {
+	private function setEventManager(value : IComponentEventManager<E>) : 
+																		IComponentEventManager<E> {
 		if(eventManager.isDefined()) {
 			eventManager.onEventManagerCleanup();
 			eventManager = null;
@@ -122,7 +119,8 @@ class Root<T> implements IComponentRoot<T> {
 		return eventManager;
 	}
 	
-	private function setRenderManager(value : IComponentRenderManager<T>) : IComponentRenderManager<T> {
+	private function setRenderManager(value : IComponentRenderManager<E>) : 
+																		IComponentRenderManager<E> {
 		if(renderManager.isDefined()) {
 			renderManager.onRenderManagerCleanup();
 			renderManager = null;

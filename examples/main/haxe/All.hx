@@ -12,6 +12,7 @@ import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
 import funk.gui.core.ComponentView;
 import funk.gui.core.display.IComponentRenderManager;
+import funk.gui.core.display.QuadTree;
 import funk.gui.core.events.AbstractEvent;
 import funk.gui.core.events.ComponentEvent;
 import funk.gui.core.events.IComponentEventManager;

@@ -1,21 +1,22 @@
 package funk.gui.js.core.event;
 
 import funk.gui.core.events.IComponentEventManager;
-import funk.gui.Root;
+import funk.gui.core.IComponent;
+import funk.gui.core.IComponentRoot;
 
 import js.w3c.html5.Core;
 import js.w3c.level3.Events;
 
-class EventManager implements IComponentEventManager<HTMLCanvasElement> {
+class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	
-	private var _root : Root<HTMLCanvasElement>;
+	private var _root : IComponentRoot<E>;
 	
-	private var _context : HTMLElement;
+	private var _context : E;
 	
 	public function new(){
 	}
 	
-	public function onEventManagerInitialize(root : Root<HTMLCanvasElement>) : Void {
+	public function onEventManagerInitialize(root : IComponentRoot<E>) : Void {
 		_root = root;
 		
 		_context = _root.renderManager.context;

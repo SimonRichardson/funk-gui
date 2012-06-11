@@ -1,33 +1,34 @@
 package funk.gui.js.core.display;
 
 import funk.gui.core.display.IComponentRenderManager;
-import funk.gui.Root;
+import funk.gui.core.IComponent;
+import funk.gui.core.IComponentRoot;
 import funk.gui.js.core.event.Events;
 
 import js.Dom;
 import js.w3c.html5.Canvas2DContext;
 import js.w3c.html5.Core;
 
-class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
+class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E> {
 	
 	inline public static var ELEMENT_ID : String = "gui-hx";
 	
-	public var context(get_context, never) : HTMLCanvasElement;
+	public var context(get_context, never) : E;
 	
-	private var _root : Root<HTMLCanvasElement>;
+	private var _root : IComponentRoot<E>;
 
 	private var _window : Window;
 
 	private var _document : HTMLDocument;
 	
-	private var _context : HTMLCanvasElement;
+	private var _context : E;
 
 	private var _painter : Painter;
 	
 	public function new(){
 	}
 	
-	public function onRenderManagerInitialize(root : Root<HTMLCanvasElement>) : Void {
+	public function onRenderManagerInitialize(root : IComponentRoot<E>) : Void {
 		_root = root;
 
 		_window = untyped __js__("window");
@@ -63,7 +64,7 @@ class RenderManager implements IComponentRenderManager<HTMLCanvasElement> {
 		_painter.render();
 	}
 
-	private function get_context() : HTMLCanvasElement {
+	private function get_context() : E {
 		return _context;
 	}
 }

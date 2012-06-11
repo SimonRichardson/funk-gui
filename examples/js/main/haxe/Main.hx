@@ -8,13 +8,15 @@ import funk.gui.js.core.event.EventManager;
 import funk.gui.js.display.ButtonView;
 import funk.gui.js.display.ToggleButtonView;
 
+import js.w3c.html5.Core;
+
 class Main {
 	
 	public function new(){
 		
-		var root = new Root();
-		root.renderManager = new RenderManager();
-		root.eventManager = new EventManager();
+		var root = new Root<HTMLCanvasElement>();
+		root.renderManager = new RenderManager<HTMLCanvasElement>();
+		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var button = new Button(new ButtonView());
 		button.moveTo(10, 20);

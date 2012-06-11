@@ -1,12 +1,12 @@
 package funk.gui.core.display;
 
-import funk.gui.Root;
+import funk.gui.core.IComponentRoot;
 
-interface IComponentRenderManager<T> {
+interface IComponentRenderManager<E> {
 	
-	var context(dynamic, never) : T;
+	var context(dynamic, never) : E;
 	
-	function onRenderManagerInitialize(root : Root<T>) : Void;
+	function onRenderManagerInitialize(root : IComponentRoot<E>) : Void;
 	
 	function onRenderManagerCleanup() : Void;
 	
