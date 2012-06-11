@@ -1,9 +1,11 @@
 package funk.gui.js.core.display;
 
 import funk.gui.core.display.IComponentRenderManager;
+import funk.gui.core.display.IComponentRenderManagerObserver;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
 import funk.gui.js.core.event.Events;
+import funk.signal.Signal2;
 
 import js.Dom;
 import js.w3c.html5.Canvas2DContext;
@@ -24,8 +26,23 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	private var _context : E;
 
 	private var _painter : Painter;
-	
+
+	private var _signal : ISignal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>;
+			
 	public function new(){
+		_signal = new Signal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>();
+	}
+	
+	public function addRenderManagerObserver(observer : IComponentRenderManagerObserver<E>) : 
+																IComponentRenderManagerObserver<E> {
+        _signal.add(observer.onComponentRenderManagerUpdate);
+        return observer;
+	}
+
+	public function removeRenderManagerObserver(observer : IComponentRenderManagerObserver<E>) : 
+																IComponentRenderManagerObserver<E> {
+        _signal.remove(observer.onComponentRenderManagerUpdate);
+        return observer;
 	}
 	
 	public function onRenderManagerInitialize(root : IComponentRoot<E>) : Void {
@@ -54,6 +71,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	}
 	
 	private function render() : Void {
+		notify(PRE_RENDER);
+
 		for(component in _root) {
 			if(Std.is(component.view, GraphicsComponentView)) {
 				var view : GraphicsComponentView = cast component.view;
@@ -62,6 +81,12 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		}
 		
 		_painter.render();
+
+		notify(POST_RENDER);
+	}
+
+	private function notify(type : ComponentRenderManagerUpdateType) : Void {
+		_signal.dispatch(this, type);
 	}
 
 	private function get_context() : E {

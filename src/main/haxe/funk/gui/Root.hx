@@ -5,8 +5,10 @@ import funk.collections.IQuadTree;
 import funk.option.Any;
 import funk.option.Option;
 import funk.gui.core.display.IComponentRenderManager;
+import funk.gui.core.display.IComponentRenderManagerObserver;
 import funk.gui.core.display.QuadTree;
 import funk.gui.core.events.IComponentEventManager;
+import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
@@ -14,7 +16,9 @@ import funk.gui.core.IComponentRoot;
 
 using funk.option.Any;
 
-class Root<E> implements IComponentRoot<E> {
+class Root<E> 	implements IComponentRoot<E>, 
+				implements IComponentEventManagerObserver<E>, 
+				implements IComponentRenderManagerObserver<E> {
 	
 	public var size(get_size, never) : Int;
 	
@@ -96,6 +100,25 @@ class Root<E> implements IComponentRoot<E> {
 	public function iterator() : Iterator<IComponent> {
 		return _quadTree.iterator();
 	}
+
+	public function onComponentRenderManagerUpdate(	manager : IComponentRenderManager<E>,
+												type : ComponentRenderManagerUpdateType) : Void {
+		switch(type) {
+			case PRE_RENDER: _quadTree.integrate();
+			case POST_RENDER:
+		}
+	}
+
+	public function onComponentEventManagerUpdate(	manager : IComponentEventManager<E>, 
+												type : ComponentEventManagerUpdateType) : Void {
+		switch(type) {
+			case RESIZE(w, h): 
+				_quadTree.width = w;
+				_quadTree.height = h;
+
+				invalidate();
+		}
+	}
 	
 	private function get_size() : Int {
 		return _quadTree.size;
@@ -106,8 +129,9 @@ class Root<E> implements IComponentRoot<E> {
 	}
 	
 	private function setEventManager(value : IComponentEventManager<E>) : 
-																		IComponentEventManager<E> {
+																	IComponentEventManager<E> {
 		if(eventManager.isDefined()) {
+			eventManager.removeEventManagerObserver(this);
 			eventManager.onEventManagerCleanup();
 			eventManager = null;
 		}
@@ -115,13 +139,15 @@ class Root<E> implements IComponentRoot<E> {
 		if(value != eventManager) {
 			eventManager = value;
 			eventManager.onEventManagerInitialize(this);
+			eventManager.addEventManagerObserver(this);
 		}
 		return eventManager;
 	}
 	
 	private function setRenderManager(value : IComponentRenderManager<E>) : 
-																		IComponentRenderManager<E> {
+																	IComponentRenderManager<E> {
 		if(renderManager.isDefined()) {
+			renderManager.removeRenderManagerObserver(this);
 			renderManager.onRenderManagerCleanup();
 			renderManager = null;
 		}
@@ -129,6 +155,7 @@ class Root<E> implements IComponentRoot<E> {
 		if(value != renderManager) {
 			renderManager = value;
 			renderManager.onRenderManagerInitialize(this);
+			renderManager.addRenderManagerObserver(this);
 		}
 		return renderManager;
 	}
