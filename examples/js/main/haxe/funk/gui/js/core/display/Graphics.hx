@@ -2,8 +2,10 @@ package funk.gui.js.core.display;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
+import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.IGraphicsCommand;
 import funk.gui.js.core.display.commands.GraphicsBeginFill;
+import funk.gui.js.core.display.commands.GraphicsClear;
 import funk.gui.js.core.display.commands.GraphicsEndFill;
 import funk.gui.js.core.display.commands.GraphicsMoveTo;
 import funk.gui.js.core.display.commands.GraphicsLineTo;
@@ -16,43 +18,94 @@ using funk.collections.immutable.Nil;
 
 class Graphics {
 
+	inline private static var DEFAULT_MIN_VALUE : Float = -1.0;
+
+	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
+
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
+
+	public var isDirty(getDirty, never) : Bool;
 
 	private var _list : IList<IGraphicsCommand>;
 
+	private var _bounds : Rectangle;
+
+	private var _dirty : Bool;
+
 	public function new(){
+		_dirty = false;
+		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
+
 		_list = nil.list();
 	}
 
 	public function clear() : Void {
+		invalidate();
+
 		_list = nil.list();
+		_list = _list.prepend(new GraphicsClear(_bounds));
+
+		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
 
 	public function endFill() : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsEndFill());
 	}
 
 	public function beginFill(color : Int, ?alpha : Float) : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsBeginFill(color, alpha));
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsRectangle(x, y, width, height));
+
+		_bounds.width = width > _bounds.width ? width : _bounds.width;
+		_bounds.height = height > _bounds.height ? height : _bounds.height;
 	}
 
 	public function restore() : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsRestore());
 	}
 
 	public function save() : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsSave());
 	}
 
 	public function translate(x : Float, y : Float) : Void {
+		invalidate();
+
 		_list = _list.prepend(new GraphicsTranslate(x, y));
+
+		if(x < 0) x = 0;
+		if(y < 0) y = 0;
+
+		_bounds.x = x < _bounds.x ? x : _bounds.x;
+		_bounds.y = y < _bounds.y ? y : _bounds.y;
+	}
+
+	public function invalidate() : Void {
+		_dirty = true;
+	}
+
+	public function validated() : Void {
+		_dirty = false;
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {
 		return _list.reverse;
+	}
+
+	private function getDirty() : Bool {
+		return _dirty;
 	}
 }

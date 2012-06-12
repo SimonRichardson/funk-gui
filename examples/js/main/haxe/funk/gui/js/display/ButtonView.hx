@@ -72,6 +72,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 
 			graphics.clear();
 			graphics.save();
+
 			graphics.translate(x, y);
 
 			if(_button.enabled) {

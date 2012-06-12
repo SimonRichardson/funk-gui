@@ -61,6 +61,9 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		_document.body.appendChild(_context);
 
 		_canvas2dContext = _context.getContext("2d");
+		_canvas2dContext.canvas.width = _window.innerWidth;
+		_canvas2dContext.canvas.height = _window.innerHeight;
+
 		_painter = new Painter(_canvas2dContext);
 	}
 	
@@ -77,11 +80,20 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	public function resizeTo(width : Float, height : Float) : Void {
 		_canvas2dContext.canvas.width = Std.int(width);
 		_canvas2dContext.canvas.height = Std.int(height);
+
+		// TODO : Cache this, because we don't need to do this every render.
+		for(component in _root) {
+			if(Std.is(component.view, GraphicsComponentView)) {
+				var view : GraphicsComponentView = cast component.view;
+				view.graphics.invalidate();
+			}
+		}
 	}
 	
 	private function render() : Void {
 		notify(PRE_RENDER);
 
+		// TODO : Cache this, because we don't need to do this every render.
 		for(component in _root) {
 			if(Std.is(component.view, GraphicsComponentView)) {
 				var view : GraphicsComponentView = cast component.view;

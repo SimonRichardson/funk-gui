@@ -54,6 +54,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_context = _root.renderManager.context;
 		_context.addEventListener('mousedown', handleEvent, false);
 		_context.addEventListener('click', handleEvent, false);
+
+		onResize(null);
 	}
 	
 	public function onEventManagerCleanup() : Void {

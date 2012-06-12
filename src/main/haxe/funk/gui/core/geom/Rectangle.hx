@@ -32,6 +32,13 @@ class Rectangle {
 	public function clone() : Rectangle {
 		return new Rectangle(x, y, width, height);
 	}
+
+	public function setValues(x : Float, y : Float, w : Float, h : Float) : Void {
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
+	}
 	
 	public function moveTo(x : Float, y : Float) : Void {
 		this.x = x;
