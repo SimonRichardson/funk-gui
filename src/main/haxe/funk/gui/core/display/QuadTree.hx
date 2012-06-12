@@ -16,7 +16,7 @@ using funk.unit.Expect;
 
 class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 
-	private static var MAX_RECURSION : Int = 4;
+	private static var MAX_RECURSION : Int = 2;
 
 	public var width(get_width, set_width) : Float;
 
@@ -36,7 +36,7 @@ class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 		super();
 
 		_nodes = nil.list();
-		_quad = new QuadTreeNode<T>(new Rectangle(), MAX_RECURSION);
+		_quad = new QuadTreeNode<T>(new Rectangle(0, 0, width, height), MAX_RECURSION);
 	}
 
 	public function add(value : T) : IQuadTree<T> {
@@ -203,7 +203,9 @@ private class QuadTreeNode<T : IComponent> {
 		_rect = rect;
 		_level = level;
 
-		_leaf = if(level > 0) {
+		_leaf = level == 0;
+
+		if(!_leaf){ 
 			var l : Int = level - 1;
 
 			var qx : Float = _rect.x;
@@ -215,11 +217,8 @@ private class QuadTreeNode<T : IComponent> {
 			_q1 = new QuadTreeNode<T>(new Rectangle(qx + qw, qy, qw, qh), l);
 			_q2 = new QuadTreeNode<T>(new Rectangle(qx, qy + qh, qw, qh), l);
 			_q3 = new QuadTreeNode<T>(new Rectangle(qx + qw, qy + qh, qw, qh), l);
-
-			false;
 		} else {
 			_nodes = nil.list();
-			true;
 		}
 	}
 
@@ -228,6 +227,7 @@ private class QuadTreeNode<T : IComponent> {
 			_nodes = _nodes.prepend(value);
 		} else {
 			var bounds : Rectangle = value.view.bounds;
+			
 			if(_q0.rect.intersects(bounds)) _q0.add(value);
 			
 			if(_q1.rect.intersects(bounds)) _q1.add(value);
@@ -333,6 +333,7 @@ private class QuadTreeNode<T : IComponent> {
 			_q1.x = qw;
 			_q3.x = qw;
 		}
+
 		return _rect.width;
 	}
 
@@ -354,6 +355,7 @@ private class QuadTreeNode<T : IComponent> {
 			_q2.y = qh;
 			_q3.y = qh;
 		}
+
 		return _rect.height;
 	}
 }

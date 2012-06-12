@@ -10,4 +10,8 @@ class ToggleButton extends ButtonComponent {
 		allowViewType(IToggleButtonView);
 		allowModelType(ButtonModel);
 	}
+
+	override public function toString() : String {
+		return "[ToggleButton]";
+	}
 }

@@ -4,8 +4,9 @@ import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
 import funk.gui.core.IComponentObserver;
 import funk.gui.core.IComponentView;
+import funk.gui.core.events.IComponentEventTarget;
 
-interface IComponent {
+interface IComponent implements IComponentEventTarget {
 	
 	var id(dynamic, dynamic) : Int;
 	

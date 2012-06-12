@@ -10,4 +10,8 @@ class Button extends ButtonComponent {
 		allowViewType(IButtonView);
 		allowModelType(ButtonModel);
 	}
+	
+	override public function toString() : String {
+		return "[Button]";
+	}
 }

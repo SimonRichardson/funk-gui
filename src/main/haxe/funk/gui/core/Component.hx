@@ -104,6 +104,15 @@ class Component implements IComponent {
 			view.onComponentResize(width, height);
 		}
 	}
+
+	public function captureEventTarget(point : Point) : IComponentEventTarget {
+		if(view.isDefined()) {
+			if(view.containsPoint(point)) {
+				return this;
+			}
+		}
+		return null;
+	}
 	
 	private function initComponent(componentView : IComponentView) : Void {
 		initTypes();
@@ -298,5 +307,9 @@ class Component implements IComponent {
 	
 	private function set_enabled(value : Bool) : Bool {
 		return state.enabled = value;
+	}
+
+	public function toString() : String {
+		return "[Component]";
 	}
 }

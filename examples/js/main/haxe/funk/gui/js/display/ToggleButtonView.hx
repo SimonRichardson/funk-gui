@@ -63,8 +63,8 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 		
 	}
 
-	public function captureEventTarget(point : Point) : IComponentEventTarget {
-		return bounds.containsPoint(point) ? this : null;
+	public function containsPoint(point : Point) : Bool {
+		return bounds.containsPoint(point);
 	}
 	
 	private function repaint() : Void {

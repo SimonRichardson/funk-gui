@@ -105,7 +105,8 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function captureEventTarget(point : Point) : IComponentEventTarget {
 		var items : IList<IComponent> = getComponentsIntersectsPoint(point);
 		for(item in items) {
-			var target : IComponentEventTarget = item.view.captureEventTarget(point);
+			var component : IComponent = item;
+			var target : IComponentEventTarget = component.captureEventTarget(point);
 			if(target != null) {
 				return target;
 			}
@@ -153,8 +154,8 @@ class Root<E> 	implements IComponentRoot<E>,
 		
 		if(value != eventManager) {
 			eventManager = value;
-			eventManager.onEventManagerInitialize(this);
 			eventManager.addEventManagerObserver(this);
+			eventManager.onEventManagerInitialize(this);
 		}
 		return eventManager;
 	}
@@ -169,9 +170,13 @@ class Root<E> 	implements IComponentRoot<E>,
 		
 		if(value != renderManager) {
 			renderManager = value;
-			renderManager.onRenderManagerInitialize(this);
 			renderManager.addRenderManagerObserver(this);
+			renderManager.onRenderManagerInitialize(this);
 		}
 		return renderManager;
+	}
+
+	public function toString() : String {
+		return "[Root]";
 	}
 }

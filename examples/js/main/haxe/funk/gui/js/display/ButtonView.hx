@@ -63,8 +63,8 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 		
 	}
 
-	public function captureEventTarget(point : Point) : IComponentEventTarget {
-		return bounds.containsPoint(point) ? this : null;
+	public function containsPoint(point : Point) : Bool {
+		return bounds.containsPoint(point);
 	}
 	
 	private function repaint() : Void {
