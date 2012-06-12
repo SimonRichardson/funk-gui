@@ -71,6 +71,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 		if(_button.isDefined()) {
 
 			graphics.clear();
+			graphics.save();
 			graphics.translate(x, y);
 
 			if(_button.enabled) {
@@ -89,6 +90,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 
 			graphics.drawRect(0, 0, width, height);
 			graphics.endFill();
+			graphics.restore();
 		}
 	}
 }

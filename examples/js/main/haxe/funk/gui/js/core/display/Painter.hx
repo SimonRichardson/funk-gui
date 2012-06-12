@@ -40,9 +40,13 @@ class Painter {
 					_context.moveTo(x, y);
 				case LINE_TO(x, y): 
 					_context.lineTo(x, y);
+				case SAVE:
+					_context.save();
 				case RECT(x, y, width, height): 
 					_context.fillRect(x, y, width, height);
-				case TRANSLATE(x, y): 
+				case RESTORE:
+					_context.restore();
+				case TRANSLATE(x, y):
 					_context.translate(x, y);
 			}
 		}

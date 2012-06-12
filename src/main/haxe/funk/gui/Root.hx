@@ -116,7 +116,8 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function onComponentRenderManagerUpdate(	manager : IComponentRenderManager<E>,
 												type : ComponentRenderManagerUpdateType) : Void {
 		switch(type) {
-			case PRE_RENDER: _quadTree.integrate();
+			case PRE_RENDER: 
+				_quadTree.integrate();
 			case POST_RENDER:
 		}
 	}
@@ -124,7 +125,9 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function onComponentEventManagerUpdate(	manager : IComponentEventManager<E>, 
 												type : ComponentEventManagerUpdateType) : Void {
 		switch(type) {
-			case RESIZE(w, h): 
+			case RESIZE(w, h):
+				renderManager.resizeTo(w, h);
+
 				_quadTree.width = w;
 				_quadTree.height = h;
 

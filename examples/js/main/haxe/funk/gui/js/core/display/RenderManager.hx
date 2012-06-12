@@ -8,6 +8,7 @@ import funk.gui.js.core.event.Events;
 import funk.signal.Signal2;
 
 import js.Dom;
+import js.w3c.DOMTypes;
 import js.w3c.html5.Canvas2DContext;
 import js.w3c.html5.Core;
 
@@ -24,6 +25,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	private var _document : HTMLDocument;
 	
 	private var _context : E;
+
+	private var _canvas2dContext : CanvasRenderingContext2D;
 
 	private var _painter : Painter;
 
@@ -57,7 +60,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		
 		_document.body.appendChild(_context);
 
-		_painter = new Painter(_context.getContext("2d"));
+		_canvas2dContext = _context.getContext("2d");
+		_painter = new Painter(_canvas2dContext);
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -68,6 +72,11 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	
 	public function invalidate() : Void {
 		Events.render.add(render, true);
+	}
+
+	public function resizeTo(width : Float, height : Float) : Void {
+		_canvas2dContext.canvas.width = Std.int(width);
+		_canvas2dContext.canvas.height = Std.int(height);
 	}
 	
 	private function render() : Void {

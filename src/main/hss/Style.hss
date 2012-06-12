@@ -1,13 +1,19 @@
 var background = #1d1d1d;
-var textColor = #efefef;
 
 var default = {
 	background-color: $background;
-	color: $textColor;
 	margin: 0px;
 	padding: 0px;
 }
 
 body {
 	$default;
+}
+
+canvas {
+	$default;
+	position: absolute;
+	top:0px;
+	left:0px;
+	border: 1px solid #ff00ff;
 }

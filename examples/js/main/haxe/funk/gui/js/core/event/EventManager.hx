@@ -8,6 +8,7 @@ import funk.gui.core.IComponentRoot;
 import funk.gui.core.geom.Point;
 import funk.signal.Signal2;
 
+import js.Dom;
 import js.w3c.html5.Core;
 import js.w3c.level3.Events;
 
@@ -16,6 +17,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private var _root : IComponentRoot<E>;
 	
 	private var _context : E;
+
+	private var _window : Window;
 
 	private var _signal : ISignal2<IComponentEventManager<E>, ComponentEventManagerUpdateType>;
 
@@ -45,16 +48,20 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_mouseDown = false;
 		_mousePoint = new Point(0, 0);
 		
+		_window = untyped __js__("window");
+		_window.onresize = handleEvent;
+
 		_context = _root.renderManager.context;
 		_context.addEventListener('mousedown', handleEvent, false);
 		_context.addEventListener('click', handleEvent, false);
-		_context.addEventListener('resize', handleEvent, false);
 	}
 	
 	public function onEventManagerCleanup() : Void {
+		_window.onresize = null;
+		_window = null;
+
 		_context.removeEventListener('mousedown', handleEvent, false);
 		_context.removeEventListener('click', handleEvent, false);
-		_context.removeEventListener('resize', handleEvent, false);
 		_context = null;
 		
 		_root = null;
@@ -106,6 +113,6 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	}
 
 	private function onResize(event : Event) : Void {
-		trace("here");
+		notify(RESIZE(_window.innerWidth, _window.innerHeight));
 	}
 }

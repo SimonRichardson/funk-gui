@@ -71,6 +71,7 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 		if(_toggleButton.isDefined()) {
 			
 			graphics.clear();
+			graphics.save();
 			graphics.translate(x, y);
 
 			if(_toggleButton.enabled) {
@@ -89,6 +90,7 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 
 			graphics.drawRect(0, 0, width, height);
 			graphics.endFill();
+			graphics.restore();
 		}
 	}
 }

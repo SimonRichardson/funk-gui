@@ -18,4 +18,6 @@ interface IComponentRenderManager<E> {
 	function onRenderManagerCleanup() : Void;
 	
 	function invalidate() : Void;
+
+	function resizeTo(width : Float, height : Float) : Void;
 }
