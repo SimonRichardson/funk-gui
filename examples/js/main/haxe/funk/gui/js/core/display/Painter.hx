@@ -29,16 +29,17 @@ class Painter {
 	}
 
 	public function render() : Void {
-		var p = _list;
+		var p : IList<Graphics> = _list;
 		// TODO : Work out if we're clearing & if we are then work out if we're 
 		// overdrawing. If overdrawing is happening then work out the rendering order
 		// so we invalidate the overdraws.
-		for(g in p) {
-			var graphics : Graphics = g;
+		while(p.nonEmpty) {
+			var graphics : Graphics = p.head;
 
 			// We've not changed, continue.
 			if(!graphics.isDirty) continue;
 
+			// Render the commands.
 			var commands : IList<IGraphicsCommand> = graphics.commands;
 			for(c in commands) {
 				var command : IGraphicsCommand = c;
@@ -65,7 +66,26 @@ class Painter {
 				}
 			}
 
+			// Find out if we're overlapping something here (if so mark as invalidated)
+			// TODO : Pre-compute the dirty regions.
+			markInsersections(graphics.bounds, p.tail);
+
 			graphics.validated();
+
+			p = p.tail;
+		}
+	}
+
+	private function markInsersections(bounds : Rectangle, list : IList<Graphics>) : Void {
+		var p : IList<Graphics> = list;
+		while(p.nonEmpty) {
+			var graphics : Graphics = p.head;
+
+			if(bounds.intersects(graphics.bounds)) {
+				graphics.invalidate();
+			}
+
+			p = p.tail;
 		}
 	}
 }

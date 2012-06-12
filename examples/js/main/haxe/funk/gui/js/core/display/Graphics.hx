@@ -24,6 +24,8 @@ class Graphics {
 
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
+	public var bounds(getBounds, never) : Rectangle;
+
 	public var isDirty(getDirty, never) : Bool;
 
 	private var _list : IList<IGraphicsCommand>;
@@ -103,6 +105,10 @@ class Graphics {
 
 	private function getCommands() : IList<IGraphicsCommand> {
 		return _list.reverse;
+	}
+
+	private function getBounds() : Rectangle {
+		return _bounds;
 	}
 
 	private function getDirty() : Bool {
