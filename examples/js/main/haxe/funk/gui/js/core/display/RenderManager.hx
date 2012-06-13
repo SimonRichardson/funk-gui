@@ -65,8 +65,6 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		_canvas2dContext.canvas.height = _window.innerHeight;
 
 		_painter = new Painter(_canvas2dContext);
-
-		Events.render.add(render, true);
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -76,7 +74,7 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	}
 	
 	public function invalidate() : Void {
-		
+		Events.render.add(render, true);	
 	}
 
 	public function resizeTo(width : Float, height : Float) : Void {

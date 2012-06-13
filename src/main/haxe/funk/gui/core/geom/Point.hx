@@ -2,9 +2,9 @@ package funk.gui.core.geom;
 
 class Point {
 	
-	public var x(default, default) : Float;
+	public var x : Float;
 	
-	public var y(default, default) : Float;
+	public var y : Float;
 	
 	public function new(?x : Float = 0.0, ?y : Float = 0.0) {
 		moveTo(x, y);

@@ -18,8 +18,8 @@ class Main {
 		root.renderManager = new RenderManager<HTMLCanvasElement>();
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
-		for(i in 0...20) {
-			for(j in 0...20) {
+		for(i in 0...60) {
+			for(j in 0...60) {
 				var button = new Button(new ButtonView());
 				button.moveTo(i * 31, j * 31);
 				button.resizeTo(30, 30);

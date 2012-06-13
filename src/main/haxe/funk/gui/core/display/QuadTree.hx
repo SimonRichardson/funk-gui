@@ -16,11 +16,9 @@ using funk.unit.Expect;
 
 class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 
-	private static var MAX_RECURSION : Int = 2;
+	private static var MAX_RECURSION : Int = 3;
 
-	public var width(get_width, set_width) : Float;
-
-	public var height(get_height, set_height) : Float;
+	public var rect(get_rect, set_rect) : IQuadTreeRectangle;
 
     public var size(get_size, never): Int;
 
@@ -122,6 +120,12 @@ class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 		}
 	}
 
+	public function describe() : String {
+		var buffer : StringBuf = new StringBuf();
+		_quad.describe(buffer, "\n");
+		return buffer.toString();
+	}
+
 	override public function iterator() : IProductIterator<Dynamic> {
 		return _nodes.iterator();
 	}
@@ -130,21 +134,12 @@ class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 		return _nodes.productElement(i);
 	}
 
-	private function get_width() : Float {
-		return _quad.width;
+	private function get_rect() : IQuadTreeRectangle {
+		return _quad.rect;
 	}
 
-	private function set_width(value : Float) : Float {
-		_quad.width = value;
-		return value;
-	}
-
-	private function get_height() : Float {
-		return _quad.height;
-	}
-
-	private function set_height(value : Float) : Float {
-		_quad.height = value;
+	private function set_rect(value : IQuadTreeRectangle) : IQuadTreeRectangle {
+		_quad.rect = cast value;
 		return value;
 	}
 
@@ -171,19 +166,13 @@ class QuadTree<T : IComponent> extends Product, implements IQuadTree<T> {
 
 private class QuadTreeNode<T : IComponent> {
 
-	public var x(get_x, set_x) : Float;
-
-	public var y(get_y, set_y) : Float;
-
-	public var width(get_width, set_width) : Float;
-
-	public var height(get_height, set_height) : Float;
-
 	public var nodes(get_nodes, never) : IList<T>;
 
-	private var rect(get_rect, never) : Rectangle;
+	public var rect(get_rect, set_rect) : Rectangle;
 
 	private var _rect : Rectangle;
+
+	private var _cacheRectangle : Rectangle;
 
 	private var _level : Int;
 
@@ -204,6 +193,8 @@ private class QuadTreeNode<T : IComponent> {
 		_level = level;
 
 		_leaf = level == 0;
+
+		_cacheRectangle = new Rectangle();
 
 		if(!_leaf){ 
 			var l : Int = level - 1;
@@ -250,20 +241,23 @@ private class QuadTreeNode<T : IComponent> {
 	}
 
 	public function queryPoint(value : Point) : Option<QuadTreeNode<T>> {
-		return if(_leaf) {
-			_rect.containsPoint(value) ? Some(this) : None;
+		if(_leaf) {
+			return _rect.containsPoint(value) ? Some(this) : None;
 		} else {
+
+			var op : Option<QuadTreeNode<T>> = None;
+
 			if(_q0.rect.containsPoint(value)) {
-				_q0.queryPoint(value);
+				op = _q0.queryPoint(value);
 			} else if(_q1.rect.containsPoint(value)) {
-				_q1.queryPoint(value);
+				op = _q1.queryPoint(value);
 			} else if(_q2.rect.containsPoint(value)) {
-				_q2.queryPoint(value);
+				op = _q2.queryPoint(value);
 			} else if(_q3.rect.containsPoint(value)) {
-				_q3.queryPoint(value);
-			} else {
-				None;
+				op = _q3.queryPoint(value);
 			}
+
+			return op;
 		}
 	}
 
@@ -271,6 +265,7 @@ private class QuadTreeNode<T : IComponent> {
 		return if(_leaf) {
 			_rect.intersects(value) ? Some(this) : None;
 		} else {
+
 			if(_q0.rect.intersects(value)) {
 				_q0.queryRectangle(value);
 			} else if(_q1.rect.intersects(value)) {
@@ -289,6 +284,21 @@ private class QuadTreeNode<T : IComponent> {
 		return _nodes.iterator();
 	}
 
+	public function describe(buffer : StringBuf, indent : String) : Void {
+		buffer.add(indent + "Level : " + _level + " - Rect " + _rect.toString());
+
+		if(!_leaf) {
+			buffer.add(indent + "Quad0:");
+			_q0.describe(buffer, indent + "\t");
+			buffer.add(indent + "Quad1:");
+			_q1.describe(buffer, indent + "\t");
+			buffer.add(indent + "Quad2:");
+			_q2.describe(buffer, indent + "\t");
+			buffer.add(indent + "Quad3:");
+			_q3.describe(buffer, indent + "\t");
+		} 
+	}
+
 	private function get_nodes() : IList<T> {
 		return _nodes;
 	}
@@ -297,65 +307,40 @@ private class QuadTreeNode<T : IComponent> {
 		return _rect;
 	}
 
-	private function get_x() : Float {
-		return _rect.x;
-	}
-
-	private function set_x(value : Float) : Float {
-		_rect.x = value;
-		return _rect.x;
-	}
-
-	private function get_y() : Float {
-		return _rect.y;
-	}
-
-	private function set_y(value : Float) : Float {
-		_rect.y = value;
-		return _rect.y;
-	}
-
-	private function get_width() : Float {
-		return _rect.width;
-	}
-
-	private function set_width(value : Float) : Float {
-		_rect.width = value;
-
+	private function set_rect(value : Rectangle) : Rectangle {
+		_rect = value.clone();
+		
 		if(!_leaf) {
-			var qw : Float = _rect.width * 0.5;
 
-			_q0.width = qw;
-			_q1.width = qw;
-			_q2.width = qw;
-			_q3.width = qw;
+			var qx : Float = value.x;
+			var qy : Float = value.y;
+			var qw : Float = value.width * 0.5;
+			var qh : Float = value.height * 0.5;
 
-			_q1.x = qw;
-			_q3.x = qw;
+			_cacheRectangle.width = qw;
+			_cacheRectangle.height = qh;
+
+			_cacheRectangle.x = qx;
+			_cacheRectangle.y = qy;
+
+			_q0.rect = _cacheRectangle;
+
+			_cacheRectangle.x = qx + qw;
+			_cacheRectangle.y = qy;
+
+			_q1.rect = _cacheRectangle;
+
+			_cacheRectangle.x = qx;
+			_cacheRectangle.y = qy + qh;
+
+			_q2.rect = _cacheRectangle;
+
+			_cacheRectangle.x = qx + qw;
+			_cacheRectangle.y + qy + qh;
+
+			_q3.rect = _cacheRectangle;
 		}
 
-		return _rect.width;
-	}
-
-	private function get_height() : Float {
-		return _rect.height;
-	}
-
-	private function set_height(value : Float) : Float {
-		_rect.height = value;
-
-		if(!_leaf) {
-			var qh : Float = _rect.height * 0.5;
-
-			_q0.height = qh;
-			_q1.height = qh;
-			_q2.height = qh;
-			_q3.height = qh;
-
-			_q2.y = qh;
-			_q3.y = qh;
-		}
-
-		return _rect.height;
+		return value;
 	}
 }

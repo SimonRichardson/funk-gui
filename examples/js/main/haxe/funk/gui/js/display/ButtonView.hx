@@ -81,7 +81,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 						0x0000ff;	
 					}
 				} else {
-					0xff00ff;
+					0xc1c1c1;
 				}
 			} else {
 				0x110011;

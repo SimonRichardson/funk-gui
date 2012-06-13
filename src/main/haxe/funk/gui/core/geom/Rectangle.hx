@@ -4,13 +4,13 @@ import funk.gui.core.geom.Point;
 
 class Rectangle {
 	
-	public var x(default, default) : Float;
+	public var x : Float;
 	
-	public var y(default, default) : Float;
+	public var y : Float;
 	
-	public var width(default, default) : Float;
+	public var width : Float;
 	
-	public var height(default, default) : Float;
+	public var height : Float;
 
 	public var left(getLeft, setLeft): Float;
 
@@ -134,5 +134,9 @@ class Rectangle {
 		width = value.x - x;
 		height = value.y - y;
 		return value;
+	}
+
+	public function toString() : String {
+		return "{x: " + x + ", y: " + y + ", width: " + width + ", height: " + height + "}";
 	}
 }

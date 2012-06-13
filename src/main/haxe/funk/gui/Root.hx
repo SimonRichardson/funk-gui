@@ -32,9 +32,12 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	public var eventParent(get_eventParent, never) : IComponentEventTarget;
 	
+	private var _bounds : Rectangle;
+
 	private var _quadTree : IQuadTree<IComponent>;
 	
 	public function new() {
+		_bounds = new Rectangle(0, 0, 250, 250);
 		_quadTree = new QuadTree<IComponent>(250, 250);
 	}
 	
@@ -126,13 +129,14 @@ class Root<E> 	implements IComponentRoot<E>,
 	}
 
 	public function onComponentEventManagerUpdate(	manager : IComponentEventManager<E>, 
-												type : ComponentEventManagerUpdateType) : Void {
+													type : ComponentEventManagerUpdateType) : Void {
 		switch(type) {
 			case RESIZE(w, h):
+				_bounds.setValues(0, 0, w, h);
+
 				renderManager.resizeTo(w, h);
 
-				_quadTree.width = w;
-				_quadTree.height = h;
+				_quadTree.rect = _bounds;
 
 				invalidate();
 		}

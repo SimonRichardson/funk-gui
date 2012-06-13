@@ -138,9 +138,6 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 			}
 
 			currentTarget = currentTarget.eventParent;
-
-			// FIXME (Simon)
-			event.bubbles = false;
 		}
 	}
 
