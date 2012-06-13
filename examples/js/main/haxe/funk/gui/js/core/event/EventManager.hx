@@ -1,20 +1,29 @@
 package funk.gui.js.core.event;
 
+import funk.collections.IList;
+import funk.collections.immutable.Nil;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.UIEvent;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
 import funk.gui.core.geom.Point;
+import funk.option.Any;
 import funk.signal.Signal2;
 
 import js.Dom;
 import js.w3c.html5.Core;
 import js.w3c.level3.Events;
 
+using funk.collections.immutable.Nil;
+using funk.option.Any;
+
 class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	
 	public var focus(get_focus, set_focus) : IComponentEventTarget;
+
+	public var isDown(get_isDown, never) : Bool;
 
 	private var _root : IComponentRoot<E>;
 	
@@ -39,6 +48,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private var _lastTarget : IComponentEventTarget;
 
 	private var _hoverTarget : IComponentEventTarget;
+
+	private var _hoveredChildren : IList<IComponentEventTarget>;
 	
 	public function new(){
 		_signal = new Signal2<IComponentEventManager<E>, ComponentEventManagerUpdateType>();
@@ -64,6 +75,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_mouseDownPoint = new Point(0, 0);
 		_mouseLastPoint = new Point(0, 0);
 		_mouseUpPoint = new Point(0, 0);
+
+		_hoveredChildren = nil.list();
 		
 		_window = untyped __js__("window");
 		_window.onresize = handleEvent;
@@ -71,6 +84,7 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_context = _root.renderManager.context;
 		_context.addEventListener('mousedown', handleEvent, false);
 		_context.addEventListener('mousemove', handleEvent, false);
+		_context.addEventListener('mouseup', handleEvent, false);
 		_context.addEventListener('click', handleEvent, false);
 
 		onResize(null);
@@ -102,16 +116,44 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_signal.dispatch(this, type);
 	}
 
+	private function dispatchEvent(target : IComponentEventTarget, event : UIEvent) : Void {
+		if(target.isEmpty()) {
+			// throw error here
+		}
+
+		var currentTarget = target;
+
+		event.lastTarget = null;
+		event.target = target;
+
+		while(event.bubbles && currentTarget.isDefined()) {
+			event.currentTarget = currentTarget;
+			
+			currentTarget.processEvent(event);
+
+			event.lastTarget = currentTarget;
+
+			if(_root == target) {
+				break;
+			}
+
+			currentTarget = currentTarget.eventParent;
+
+			// FIXME (Simon)
+			event.bubbles = false;
+		}
+	}
+
 	private function getHit(point : Point) : IComponentEventTarget {
 		var currentTarget : IComponentEventTarget = _root;
 		var lastTarget : IComponentEventTarget = null;
 
-		if(null != currentTarget) {
+		if(currentTarget.isDefined()) {
 			while(currentTarget != lastTarget) {
 				lastTarget = currentTarget;
 				currentTarget = currentTarget.captureEventTarget(point);
 
-				if(null == currentTarget) {
+				if(currentTarget.isEmpty()) {
 					return lastTarget;
 				}
 			}
@@ -123,18 +165,18 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private function setFocus(child : IComponentEventTarget) : Void {
 		if(_focus == child) return;
 
-		if(null != _focus) {
-			//_focus.onEventManager(FOCUS_OUT);
+		if(_focus.isDefined()) {
+			dispatchEvent(_focus, new UIEvent(FOCUS_OUT));
 		}
 
-		if(null == child) _focus = null;
+		if(child.isDefined()) _focus = null;
 		else {
 			var focusOut : IComponentEventTarget = _focus;
 			var focusIn : IComponentEventTarget = child;
 
 			_focus = child;
 
-			// _focus.onEventManager(FOCUS_IN(focusOut, focusIn));
+			dispatchEvent(_focus, new UIEvent(FOCUS_IN(focusOut, focusIn)));
 		}
 	}
 
@@ -148,10 +190,10 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_mouseDownPoint.y = _mousePoint.y;
 
 		var currentTarget : IComponentEventTarget = getHit(_mousePoint);
-		if(null != currentTarget) {
+		if(currentTarget.isDefined()) {
 			setFocus(currentTarget);
 
-			// currentTarget.onEventManager(MOUSE_DOWN(_mouseDownPoint));
+			dispatchEvent(currentTarget, new UIEvent(MOUSE_DOWN(_mouseDownPoint)));
 		}
 
 		_lastTarget = currentTarget;
@@ -173,7 +215,7 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		if(	_mouseLastPoint.x != _mousePoint.x || 
 			_mouseLastPoint.y != _mousePoint.y) {
 
-			// currentTarget.onEventManager(MOUSE_MOVE(_mousePoint, _mouseDownPoint));
+			dispatchEvent(currentTarget, new UIEvent(MOUSE_MOVE(_mousePoint, _mouseDownPoint)));
 
 			_mouseLastPoint.x = _mousePoint.x;
 			_mouseLastPoint.y = _mousePoint.y;
@@ -190,8 +232,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_mouseUpPoint.y = _mousePoint.y;
 
 		var currentTarget : IComponentEventTarget = _lastTarget;
-		if(null != currentTarget) {
-			// currentTarget.onEventManager(MOUSE_UP(_mouseUpPoint));
+		if(currentTarget.isDefined()) {
+			dispatchEvent(currentTarget, new UIEvent(MOUSE_UP(_mouseUpPoint)));
 		}
 	}
 
@@ -200,7 +242,48 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		else {
 			var exists : Bool = false;
 
-			
+			var child : IComponentEventTarget;
+			var activeChild : IComponentEventTarget;
+			var target : IComponentEventTarget;
+
+			var hoverRemoves : IList<IComponentEventTarget> = nil.list();
+
+			var p : IList<IComponentEventTarget> = _hoveredChildren;
+			while(p.nonEmpty) {
+				child = p.head;
+
+				if(currentTarget != child) {
+					activeChild = currentTarget;
+
+					while(activeChild != child) {
+
+						if(activeChild.isDefined()) {
+							hoverRemoves = hoverRemoves.prepend(child);
+
+							dispatchEvent(child, new UIEvent(MOUSE_OUT(_mousePoint)));
+
+							break;
+						}
+
+						activeChild = activeChild.eventParent;
+					}
+				} else {
+					exists = true;
+				}
+
+				p = p.tail;
+			}
+
+			if(!exists && currentTarget.isDefined()) {
+
+				_hoveredChildren = _hoveredChildren.prepend(currentTarget);
+
+				dispatchEvent(currentTarget, new UIEvent(MOUSE_IN(_mousePoint)));
+			}
+
+			_hoveredChildren = _hoveredChildren.filterNot(function(child : IComponentEventTarget) : Bool {
+				return hoverRemoves.contains(child);
+			});
 		}
 	}
 
@@ -219,5 +302,9 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private function set_focus(value : IComponentEventTarget) : IComponentEventTarget {
 		_focus = value;
 		return value;
+	}
+
+	private function get_isDown() : Bool {
+		return _mouseDown;
 	}
 }

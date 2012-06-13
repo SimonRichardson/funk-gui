@@ -7,6 +7,7 @@ import funk.gui.core.IComponentObserver;
 import funk.gui.core.IComponentView;
 import funk.gui.core.events.ComponentEvent;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.UIEvent;
 import funk.gui.core.geom.Point;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentStateObserver;
@@ -43,6 +44,8 @@ class Component implements IComponent {
 	
 	public var enabled(get_enabled, set_enabled) : Bool;
 	
+	public var eventParent(get_eventParent, never) : IComponentEventTarget;
+
 	private var event(get_event, set_event) : ComponentEvent;
 	
 	private var _model : IComponentModel;
@@ -112,6 +115,21 @@ class Component implements IComponent {
 			}
 		}
 		return null;
+	}
+
+	public function processEvent(event : UIEvent) : Void {
+		if(!enabled) return;
+		else {
+			switch(event.type) {
+				case FOCUS_OUT: focused = false;
+				case FOCUS_IN(focusOut, focusIn): focused = focusIn == this;
+				case MOUSE_IN(position): hovered = true;
+				case MOUSE_DOWN(position): pressed = true;
+				case MOUSE_MOVE(position, downPosition): 
+				case MOUSE_UP(position): pressed = false;
+				case MOUSE_OUT(position): hovered = false;
+			}
+		}
 	}
 	
 	private function initComponent(componentView : IComponentView) : Void {
@@ -307,6 +325,10 @@ class Component implements IComponent {
 	
 	private function set_enabled(value : Bool) : Bool {
 		return state.enabled = value;
+	}
+
+	private function get_eventParent() : IComponentEventTarget {
+		return model.parent;
 	}
 
 	public function toString() : String {

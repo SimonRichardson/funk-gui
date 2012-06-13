@@ -10,6 +10,7 @@ import funk.gui.core.display.QuadTree;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.UIEvent;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
@@ -28,6 +29,8 @@ class Root<E> 	implements IComponentRoot<E>,
 	public var eventManager(default, setEventManager) : IComponentEventManager<E>;
 	
 	public var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
+
+	public var eventParent(get_eventParent, never) : IComponentEventTarget;
 	
 	private var _quadTree : IQuadTree<IComponent>;
 	
@@ -117,8 +120,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function onComponentRenderManagerUpdate(	manager : IComponentRenderManager<E>,
 												type : ComponentRenderManagerUpdateType) : Void {
 		switch(type) {
-			case PRE_RENDER: 
-				_quadTree.integrate();
+			case PRE_RENDER: _quadTree.integrate();
 			case POST_RENDER:
 		}
 	}
@@ -135,6 +137,10 @@ class Root<E> 	implements IComponentRoot<E>,
 				invalidate();
 		}
 	}
+
+	public function processEvent(event : UIEvent) : Void {
+
+	}
 	
 	private function get_size() : Int {
 		return _quadTree.size;
@@ -142,6 +148,10 @@ class Root<E> 	implements IComponentRoot<E>,
 	
 	private function get_root() : IComponentRoot<E> {
 		return this;
+	}
+
+	private function get_eventParent() : IComponentEventTarget {
+		return null;
 	}
 	
 	private function setEventManager(value : IComponentEventManager<E>) : 

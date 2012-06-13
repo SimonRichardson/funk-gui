@@ -12,13 +12,18 @@ using funk.collections.immutable.Nil;
 
 class Painter {
 
+	public var size(getSize, never) : Int;
+
 	private var _context : CanvasRenderingContext2D;
 
 	private var _list : IList<Graphics>;
 
+	private var _rendering : Bool;
+
 	public function new(context : CanvasRenderingContext2D) {		
 		_context = context;
 
+		_rendering = false;
 		_list = nil.list();
 	}
 
@@ -28,51 +33,66 @@ class Painter {
 		_list = _list.prepend(graphics);
 	}
 
+	public function removeAll() : Void {
+		_list = nil.list();
+	}
+
 	public function render() : Void {
-		var p : IList<Graphics> = _list;
-		// TODO : Work out if we're clearing & if we are then work out if we're 
-		// overdrawing. If overdrawing is happening then work out the rendering order
-		// so we invalidate the overdraws.
-		while(p.nonEmpty) {
-			var graphics : Graphics = p.head;
+		if(_rendering) return;
+		else {
+			_rendering = true;
 
-			// We've not changed, continue.
-			if(!graphics.isDirty) continue;
+			var p : IList<Graphics> = _list;
+			// TODO : Work out if we're clearing & if we are then work out if we're 
+			// overdrawing. If overdrawing is happening then work out the rendering order
+			// so we invalidate the overdraws.
+			while(p.nonEmpty) {
+				var graphics : Graphics = p.head;
 
-			// Render the commands.
-			var commands : IList<IGraphicsCommand> = graphics.commands;
-			for(c in commands) {
-				var command : IGraphicsCommand = c;
+				// We've not changed, continue.
+				if(!graphics.isDirty) {
+					p = p.tail;
 
-				switch(command.type) {
-					case BEGIN_FILL(color, alpha): 
-						_context.fillStyle = StringTools.hex(color);
-					case CLEAR(bounds):
-						_context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
-					case END_FILL: 
-						_context.fill();
-					case MOVE_TO(x, y): 
-						_context.moveTo(x, y);
-					case LINE_TO(x, y): 
-						_context.lineTo(x, y);
-					case SAVE:
-						_context.save();
-					case RECT(x, y, width, height): 
-						_context.fillRect(x, y, width, height);
-					case RESTORE:
-						_context.restore();
-					case TRANSLATE(x, y):
-						_context.translate(x, y);
+					continue;
 				}
+
+				// Render the commands.
+				var commands : IList<IGraphicsCommand> = graphics.commands;
+				for(c in commands) {
+					var command : IGraphicsCommand = c;
+
+					switch(command.type) {
+						case BEGIN_FILL(color, alpha): 
+							_context.fillStyle = StringTools.hex(color);
+						case CLEAR(bounds):
+							_context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+						case END_FILL: 
+							_context.fill();
+						case MOVE_TO(x, y): 
+							_context.moveTo(x, y);
+						case LINE_TO(x, y): 
+							_context.lineTo(x, y);
+						case SAVE:
+							_context.save();
+						case RECT(x, y, width, height): 
+							_context.fillRect(x, y, width, height);
+						case RESTORE:
+							_context.restore();
+						case TRANSLATE(x, y):
+							_context.translate(x, y);
+					}
+				}
+
+				// Find out if we're overlapping something here (if so mark as invalidated)
+				// TODO : Pre-compute the dirty regions.
+				markInsersections(graphics.bounds, p.tail);
+
+				graphics.validated();
+
+				p = p.tail;
 			}
 
-			// Find out if we're overlapping something here (if so mark as invalidated)
-			// TODO : Pre-compute the dirty regions.
-			markInsersections(graphics.bounds, p.tail);
-
-			graphics.validated();
-
-			p = p.tail;
+			_rendering = false;
 		}
 	}
 
@@ -87,5 +107,9 @@ class Painter {
 
 			p = p.tail;
 		}
+	}
+
+	private function getSize() : Int {
+		return _list.size;
 	}
 }

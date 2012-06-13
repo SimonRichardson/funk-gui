@@ -43,9 +43,9 @@ class Graphics {
 
 	public function clear() : Void {
 		invalidate();
-
+		
 		_list = nil.list();
-		_list = _list.prepend(new GraphicsClear(_bounds));
+		_list = _list.append(new GraphicsClear(_bounds));
 
 		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
@@ -53,19 +53,19 @@ class Graphics {
 	public function endFill() : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsEndFill());
+		_list = _list.append(new GraphicsEndFill());
 	}
 
 	public function beginFill(color : Int, ?alpha : Float) : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsBeginFill(color, alpha));
+		_list = _list.append(new GraphicsBeginFill(color, alpha));
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsRectangle(x, y, width, height));
+		_list = _list.append(new GraphicsRectangle(x, y, width, height));
 
 		_bounds.width = width > _bounds.width ? width : _bounds.width;
 		_bounds.height = height > _bounds.height ? height : _bounds.height;
@@ -74,19 +74,19 @@ class Graphics {
 	public function restore() : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsRestore());
+		_list = _list.append(new GraphicsRestore());
 	}
 
 	public function save() : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsSave());
+		_list = _list.append(new GraphicsSave());
 	}
 
 	public function translate(x : Float, y : Float) : Void {
 		invalidate();
 
-		_list = _list.prepend(new GraphicsTranslate(x, y));
+		_list = _list.append(new GraphicsTranslate(x, y));
 
 		if(x < 0) x = 0;
 		if(y < 0) y = 0;
@@ -104,7 +104,7 @@ class Graphics {
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {
-		return _list.reverse;
+		return _list;
 	}
 
 	private function getBounds() : Rectangle {

@@ -65,6 +65,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		_canvas2dContext.canvas.height = _window.innerHeight;
 
 		_painter = new Painter(_canvas2dContext);
+
+		Events.render.add(render, true);
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -74,7 +76,7 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	}
 	
 	public function invalidate() : Void {
-		Events.render.add(render, true);
+		
 	}
 
 	public function resizeTo(width : Float, height : Float) : Void {
@@ -84,7 +86,7 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		// TODO : Cache this, because we don't need to do this every render.
 		for(component in _root) {
 			if(Std.is(component.view, GraphicsComponentView)) {
-				var view : GraphicsComponentView = cast component.view;
+				var view : GraphicsComponentView = cast component.view;				
 				view.graphics.invalidate();
 			}
 		}
@@ -92,6 +94,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	
 	private function render() : Void {
 		notify(PRE_RENDER);
+
+		_painter.removeAll();
 
 		// TODO : Cache this, because we don't need to do this every render.
 		for(component in _root) {
@@ -104,6 +108,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		_painter.render();
 
 		notify(POST_RENDER);
+
+		Events.render.add(render, true);
 	}
 
 	private function notify(type : ComponentRenderManagerUpdateType) : Void {

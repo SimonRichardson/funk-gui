@@ -21,7 +21,7 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 
 	private var _window : Window;
 
-	private var _requesting : Bool;
+	private var _requested : Bool;
 
 	private var _invalidated : Bool;
 
@@ -32,7 +32,7 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 
 		_window = untyped __js__("window");
 
-		_requesting = false;
+		_requested = false;
 		_invalidated = false;
 
 		_requestAnimationFrame = Reflect.field(_window, 'requestAnimationFrame') || 
@@ -58,20 +58,22 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 			// This shouldn't be possible, without the use of Reflect!
 			_requestAnimationFrame.call(_window, render);
 		} else {
-			_requesting = true;
+			_requested = true;
 		}
 	}
 
 	private function render() : Void {
 		notify();
 
-		Timer.delay(function() : Void {
-			if(_requesting) {
-				_requestAnimationFrame.call(_window, render);
-			}
+		if(_requested) {
+			Timer.delay(function() : Void {
+				_requested = false;
 
-			_requesting = false;
+				_requestAnimationFrame.call(_window, render);	
+			}, POST_RENDER_TIME_STEP);
+		} else {
+			_requested = false;
 			_invalidated = false;
-		}, POST_RENDER_TIME_STEP);
+		}
 	}
 }

@@ -11,6 +11,7 @@ import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.Point;
 import funk.option.Any;
 
+import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.GraphicsComponentView;
 
 import js.Lib;
@@ -52,11 +53,13 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 	}
 	
 	public function onComponentStateUpdate(state : ComponentState, type : ComponentStateType) : Void {
-		if(type == ComponentStateType.UPDATE_ENABLED) {
-			
+		switch(type) {
+			case UPDATE_ALL_VALUES: repaint();
+			case UPDATE_ENABLED: repaint();
+			case UPDATE_HOVERED: repaint();
+			case UPDATE_FOCUSED: repaint();
+			case UPDATE_PRESSED: repaint();
 		}
-		
-		repaint();
 	}
 	
 	public function onComponentCleanup() : Void {
@@ -70,28 +73,31 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 	private function repaint() : Void {
 		if(_button.isDefined()) {
 
-			graphics.clear();
-			graphics.save();
-
-			graphics.translate(x, y);
-
-			if(_button.enabled) {
+			var color : Int = if(_button.enabled) {
 				if(_button.hovered) {
 					if(_button.pressed) {
-						graphics.beginFill(0xff0000);
+						0xff0000;
 					} else {
-						graphics.beginFill(0x0000ff);	
+						0x0000ff;	
 					}
 				} else {
-					graphics.beginFill(0xff00ff);
+					0xff00ff;
 				}
 			} else {
-				graphics.beginFill(0x1d1d1d);
+				0x110011;
 			}
+			
+			var g : Graphics = graphics;
 
-			graphics.drawRect(0, 0, width, height);
-			graphics.endFill();
-			graphics.restore();
+			g.clear();
+			g.save();
+
+			g.translate(x, y);
+			g.beginFill(color);
+			g.drawRect(0, 0, width, height);
+			g.endFill();
+
+			g.restore();
 		}
 	}
 }

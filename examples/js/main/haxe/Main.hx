@@ -18,7 +18,16 @@ class Main {
 		root.renderManager = new RenderManager<HTMLCanvasElement>();
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
-		var button = new Button(new ButtonView());
+		for(i in 0...20) {
+			for(j in 0...20) {
+				var button = new Button(new ButtonView());
+				button.moveTo(i * 31, j * 31);
+				button.resizeTo(30, 30);
+				root.add(button);
+			}
+		}
+
+		/*var button = new Button(new ButtonView());
 		button.moveTo(10, 20);
 		button.resizeTo(100, 50);
 		root.add(button);
@@ -27,7 +36,7 @@ class Main {
 		toggle.selected = true;
 		toggle.moveTo(80, 40);
 		toggle.resizeTo(100, 50);
-		root.add(toggle);
+		root.add(toggle);*/
 	}
 	
 	public static function main() : Void {

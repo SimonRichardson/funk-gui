@@ -11,6 +11,7 @@ import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.Point;
 import funk.option.Any;
 
+import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.GraphicsComponentView;
 
 import js.Lib;
@@ -19,14 +20,14 @@ using funk.option.Any;
 
 class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonView {
 		
-	private var _toggleButton : ToggleButton;	
+	private var _button : ToggleButton;	
 	
 	public function new() {
 		super();
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
-		_toggleButton = cast component;
+		_button = cast component;
 		
 	}
 	
@@ -68,29 +69,33 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 	}
 	
 	private function repaint() : Void {
-		if(_toggleButton.isDefined()) {
+		if(_button.isDefined()) {
 			
-			graphics.clear();
-			graphics.save();
-			graphics.translate(x, y);
-
-			if(_toggleButton.enabled) {
-				if(_toggleButton.hovered) {
-					if(_toggleButton.pressed) {
-						graphics.beginFill(0xff0000);
+			var color : Int = if(_button.enabled) {
+				if(_button.hovered) {
+					if(_button.pressed) {
+						0xff0000;
 					} else {
-						graphics.beginFill(0x0000ff);	
+						0x0000ff;	
 					}
 				} else {
-					graphics.beginFill(0xff00ff);
+					0xffff00;
 				}
 			} else {
-				graphics.beginFill(0x1d1d1d);
+				0x110011;
 			}
+			
+			var g : Graphics = graphics;
 
-			graphics.drawRect(0, 0, width, height);
-			graphics.endFill();
-			graphics.restore();
+			g.clear();
+			g.save();
+
+			g.translate(x, y);
+			g.beginFill(color);
+			g.drawRect(0, 0, width, height);
+			g.endFill();
+
+			g.restore();
 		}
 	}
 }
