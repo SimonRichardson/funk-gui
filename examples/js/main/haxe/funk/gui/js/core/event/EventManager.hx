@@ -14,6 +14,8 @@ import js.w3c.level3.Events;
 
 class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	
+	public var focus(get_focus, set_focus) : IComponentEventTarget;
+
 	private var _root : IComponentRoot<E>;
 	
 	private var _context : E;
@@ -25,6 +27,18 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private var _mouseDown : Bool;
 
 	private var _mousePoint : Point;
+
+	private var _mouseDownPoint : Point;
+
+	private var _mouseLastPoint : Point;
+
+	private var _mouseUpPoint : Point;
+
+	private var _focus : IComponentEventTarget;
+
+	private var _lastTarget : IComponentEventTarget;
+
+	private var _hoverTarget : IComponentEventTarget;
 	
 	public function new(){
 		_signal = new Signal2<IComponentEventManager<E>, ComponentEventManagerUpdateType>();
@@ -47,12 +61,16 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 
 		_mouseDown = false;
 		_mousePoint = new Point(0, 0);
+		_mouseDownPoint = new Point(0, 0);
+		_mouseLastPoint = new Point(0, 0);
+		_mouseUpPoint = new Point(0, 0);
 		
 		_window = untyped __js__("window");
 		_window.onresize = handleEvent;
 
 		_context = _root.renderManager.context;
 		_context.addEventListener('mousedown', handleEvent, false);
+		_context.addEventListener('mousemove', handleEvent, false);
 		_context.addEventListener('click', handleEvent, false);
 
 		onResize(null);
@@ -63,6 +81,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_window = null;
 
 		_context.removeEventListener('mousedown', handleEvent, false);
+		_context.removeEventListener('mousemove', handleEvent, false);
+		_context.removeEventListener('mouseup', handleEvent, false);
 		_context.removeEventListener('click', handleEvent, false);
 		_context = null;
 		
@@ -72,6 +92,7 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 	private function handleEvent(event : Event) : Void {
 		switch(event.type) {
 			case 'mousedown': onMouseDown(cast event);
+			case 'mousemove': onMouseMove(cast event);
 			case 'mouseup': onMouseUp(cast event);
 			case 'resize': onResize(event);
 		}
@@ -99,22 +120,104 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		return currentTarget;
 	}
 
-	private function onMouseDown(event : MouseEvent) : Void {
-		if(_mouseDown) {
-			onMouseUp(null);
+	private function setFocus(child : IComponentEventTarget) : Void {
+		if(_focus == child) return;
+
+		if(null != _focus) {
+			//_focus.onEventManager(FOCUS_OUT);
 		}
 
+		if(null == child) _focus = null;
+		else {
+			var focusOut : IComponentEventTarget = _focus;
+			var focusIn : IComponentEventTarget = child;
+
+			_focus = child;
+
+			// _focus.onEventManager(FOCUS_IN(focusOut, focusIn));
+		}
+	}
+
+	private function onMouseDown(event : MouseEvent) : Void {
+		if(_mouseDown) onMouseUp(null);
+		
 		_mousePoint.x = event.clientX;
 		_mousePoint.y = event.clientY;
 
-		trace(getHit(_mousePoint));
+		_mouseDownPoint.x = _mousePoint.x;
+		_mouseDownPoint.y = _mousePoint.y;
+
+		var currentTarget : IComponentEventTarget = getHit(_mousePoint);
+		if(null != currentTarget) {
+			setFocus(currentTarget);
+
+			// currentTarget.onEventManager(MOUSE_DOWN(_mouseDownPoint));
+		}
+
+		_lastTarget = currentTarget;
+	}
+
+	private function onMouseMove(event : MouseEvent) : Void {
+		
+		_mousePoint.x = event.clientX;
+		_mousePoint.y = event.clientY;
+
+		var currentTarget : IComponentEventTarget = _mouseDown ? 
+															_lastTarget : 
+															getHit(_mousePoint);
+		_hoverTarget = currentTarget;
+
+		handleHovering(currentTarget);
+		handleDragInOut();
+
+		if(	_mouseLastPoint.x != _mousePoint.x || 
+			_mouseLastPoint.y != _mousePoint.y) {
+
+			// currentTarget.onEventManager(MOUSE_MOVE(_mousePoint, _mouseDownPoint));
+
+			_mouseLastPoint.x = _mousePoint.x;
+			_mouseLastPoint.y = _mousePoint.y;
+		}
 	}
 
 	private function onMouseUp(event : MouseEvent) : Void {
+		_mouseDown = false;
+
+		_mousePoint.x = event == null ? _mousePoint.x : event.clientX;
+		_mousePoint.y = event == null ? _mousePoint.y : event.clientY;
+
+		_mouseUpPoint.x = _mousePoint.x;
+		_mouseUpPoint.y = _mousePoint.y;
+
+		var currentTarget : IComponentEventTarget = _lastTarget;
+		if(null != currentTarget) {
+			// currentTarget.onEventManager(MOUSE_UP(_mouseUpPoint));
+		}
+	}
+
+	private function handleHovering(currentTarget : IComponentEventTarget) : Void {
+		if(_mouseDown) return;
+		else {
+			var exists : Bool = false;
+
+			
+		}
+	}
+
+	private function handleDragInOut() : Void {
 
 	}
 
 	private function onResize(event : Event) : Void {
 		notify(RESIZE(_window.innerWidth, _window.innerHeight));
+	}
+
+	private function get_focus() : IComponentEventTarget {
+		return _focus;
+	}
+
+	private function set_focus(value : IComponentEventTarget) : IComponentEventTarget {
+		_focus = value;
+		return value;
 	}
 }
