@@ -8,10 +8,11 @@ class GraphicsComponentView extends ComponentView {
 
 	private var _graphics : Graphics;
 
-	public function new() {
+	public function new(id : Int) {
 		super();
 
 		_graphics = new Graphics();
+		_graphics.id = id;
 	}
 
 	private function getGraphics() : Graphics {

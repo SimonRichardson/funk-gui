@@ -12,6 +12,6 @@ class Button extends ButtonComponent {
 	}
 	
 	override public function toString() : String {
-		return "[Button]";
+		return Std.format("[Button (id:$id)]");
 	}
 }

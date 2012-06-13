@@ -22,8 +22,8 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 		
 	private var _button : Button;	
 	
-	public function new() {
-		super();
+	public function new(id : Int) {
+		super(id);
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
@@ -73,8 +73,18 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 	private function repaint() : Void {
 		if(_button.isDefined()) {
 
+			var xx : Float = 0;
+			var yy : Float = 0;
+			var ww : Float = width;
+			var hh : Float = height;
+
 			var color : Int = if(_button.enabled) {
 				if(_button.hovered) {
+					xx = -10;
+					yy = -10;
+					ww = width + 20;
+					hh = height + 20;
+
 					if(_button.pressed) {
 						0xff0000;
 					} else {
@@ -94,7 +104,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 
 			g.translate(x, y);
 			g.beginFill(color);
-			g.drawRect(0, 0, width, height);
+			g.drawRect(xx, yy, ww, hh);
 			g.endFill();
 
 			g.restore();

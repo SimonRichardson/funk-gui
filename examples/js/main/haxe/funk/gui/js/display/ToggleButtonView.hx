@@ -23,7 +23,7 @@ class ToggleButtonView extends GraphicsComponentView, implements IToggleButtonVi
 	private var _button : ToggleButton;	
 	
 	public function new() {
-		super();
+		super(1);
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {

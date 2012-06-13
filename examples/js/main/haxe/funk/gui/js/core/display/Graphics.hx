@@ -22,6 +22,8 @@ class Graphics {
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
+	public var id : Int;
+
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
 	public var bounds(getBounds, never) : Rectangle;
@@ -30,13 +32,20 @@ class Graphics {
 
 	private var _list : IList<IGraphicsCommand>;
 
+	private var _tx : Float;
+
+	private var _ty : Float;
+
 	private var _bounds : Rectangle;
+
+	private var _clearBounds : Rectangle;
 
 	private var _dirty : Bool;
 
 	public function new(){
 		_dirty = false;
 		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
+		_clearBounds = new Rectangle();
 
 		_list = nil.list();
 	}
@@ -44,8 +53,13 @@ class Graphics {
 	public function clear() : Void {
 		invalidate();
 		
+		_tx = 0;
+		_ty = 0;
+
+		_clearBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+
 		_list = nil.list();
-		_list = _list.append(new GraphicsClear(_bounds));
+		_list = _list.append(new GraphicsClear(_clearBounds));
 
 		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
@@ -67,6 +81,8 @@ class Graphics {
 
 		_list = _list.append(new GraphicsRectangle(x, y, width, height));
 
+		_bounds.x = _tx + x < _bounds.x ? _tx + x : _bounds.x;
+		_bounds.y = _ty + y < _bounds.y ? _ty + y : _bounds.y;
 		_bounds.width = width > _bounds.width ? width : _bounds.width;
 		_bounds.height = height > _bounds.height ? height : _bounds.height;
 	}
@@ -88,8 +104,8 @@ class Graphics {
 
 		_list = _list.append(new GraphicsTranslate(x, y));
 
-		if(x < 0) x = 0;
-		if(y < 0) y = 0;
+		_tx = x;
+		_ty = y;
 
 		_bounds.x = x < _bounds.x ? x : _bounds.x;
 		_bounds.y = y < _bounds.y ? y : _bounds.y;
@@ -113,5 +129,9 @@ class Graphics {
 
 	private function getDirty() : Bool {
 		return _dirty;
+	}
+
+	public function toString() : String {
+		return Std.format("[Graphics (id:$id)]");
 	}
 }

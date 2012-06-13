@@ -30,7 +30,7 @@ class Painter {
 	public function add(graphics : Graphics, rect : Rectangle) : Void {
 		if(rect.width <= 0 || rect.height <= 0) return;
 
-		_list = _list.prepend(graphics);
+		_list = _list.append(graphics);
 	}
 
 	public function removeAll() : Void {
@@ -56,6 +56,8 @@ class Painter {
 					continue;
 				}
 
+				var max : Rectangle = graphics.bounds.clone();
+
 				// Render the commands.
 				var commands : IList<IGraphicsCommand> = graphics.commands;
 				for(c in commands) {
@@ -63,8 +65,14 @@ class Painter {
 
 					switch(command.type) {
 						case BEGIN_FILL(color, alpha): 
-							_context.fillStyle = StringTools.hex(color);
+							_context.fillStyle = StringTools.hex(color, 6);
 						case CLEAR(bounds):
+
+							if(bounds.x < max.x) max.x = bounds.x;
+							if(bounds.y < max.y) max.y = bounds.y;
+							if(bounds.width > max.width) max.width = bounds.width;
+							if(bounds.height > max.height) max.height = bounds.height;
+
 							_context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
 						case END_FILL: 
 							_context.fill();
@@ -85,7 +93,7 @@ class Painter {
 
 				// Find out if we're overlapping something here (if so mark as invalidated)
 				// TODO : Pre-compute the dirty regions.
-				markInsersections(graphics.bounds, p.tail);
+				markInsersections(max, p.tail);
 
 				graphics.validated();
 
