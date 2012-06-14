@@ -19,7 +19,7 @@ using funk.collections.immutable.Nil;
 
 class Graphics {
 
-	inline private static var DEFAULT_MIN_VALUE : Float = -1.0;
+	inline private static var DEFAULT_MIN_VALUE : Float = 0.0;
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
@@ -47,7 +47,7 @@ class Graphics {
 
 	public function new(){
 		_dirty = false;
-		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, 0, 0);
+		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 		_previousBounds = new Rectangle();
 	}
 
@@ -62,7 +62,7 @@ class Graphics {
 		_list = nil.list();
 		_list = _list.append(new GraphicsClear(_previousBounds));
 
-		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, 0, 0);
+		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
 
 	public function endFill() : Void {
@@ -83,8 +83,11 @@ class Graphics {
 		_list = _list.append(new GraphicsRectangle(x, y, width, height));
 
 		// Expand the drawing rect.
-		if(_tx + x < _bounds.x) _bounds.x = _tx + x;
-		if(_ty + y < _bounds.y) _bounds.y = _ty + y;
+		var tx : Float = _tx + x;
+		var ty : Float = _ty + y;
+
+		if(tx < _bounds.x) _bounds.x = tx;
+		if(ty < _bounds.y) _bounds.y = ty;
 		if(width > _bounds.width) _bounds.width = width;
 		if(height > _bounds.height) _bounds.height = height;
 	}

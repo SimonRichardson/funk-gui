@@ -39,7 +39,7 @@ class Painter {
 
 		var document = CommonJS.getHtmlDocument();
 		document.onkeydown = function(event : Dynamic) : Void {
-			_debugging = true;
+			_debugging = !_debugging;
 		};
 	}
 
@@ -176,14 +176,12 @@ class Painter {
 		if(_debugging && clearRects.nonEmpty) {
 			_context.save();
 			
-			_context.strokeStyle = "#ff0000";
-			_context.lineCap = "square";
-			_context.miterLimit = 0;
+			_context.fillStyle = "rgba(255, 0, 0, 0.2)";
 			
 			var b : IList<Rectangle> = clearRects;
 			while(b.nonEmpty) {
 				var cr : Rectangle = b.head;
-				_context.strokeRect(cr.x + 1, cr.y + 1, cr.width - 1, cr.height - 1);
+				_context.fillRect(cr.x, cr.y, cr.width, cr.height);
 				b = b.tail;
 			}
 
@@ -201,12 +199,12 @@ class Painter {
 				var gb : Rectangle = graphics.bounds;
 				var gpb : Rectangle = graphics.previousBounds;
 				var ob : Rectangle = other.bounds;
-				var opb : Rectangle = other.previousBounds;
+				//var opb : Rectangle = other.previousBounds;
 
 				if(	gb.intersects(ob) || 
-					gpb.intersects(ob) ||
+					gpb.intersects(ob) /*||
 					gb.intersects(opb) || 
-					gpb.intersects(opb)) {
+					gpb.intersects(opb)*/) {
 
 					other.invalidate();
 				}
@@ -220,7 +218,7 @@ class Painter {
 		var result : IList<Rectangle> = list;
 
 		var added : Bool = false;
-
+/*
 		var p : IList<Rectangle> = list;
 		while(p.nonEmpty) {
 			var r : Rectangle = p.head;
@@ -238,7 +236,7 @@ class Painter {
 			} 
 
 			p = p.tail;
-		}
+		}*/
 
 		if(!added) {
 			result = result.prepend(rect.clone());
