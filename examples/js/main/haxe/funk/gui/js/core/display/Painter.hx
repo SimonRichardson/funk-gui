@@ -12,19 +12,24 @@ using funk.collections.immutable.Nil;
 
 class Painter {
 
+	public var bounds(getBounds, never) : Rectangle;
+
 	public var size(getSize, never) : Int;
 
 	private var _context : CanvasRenderingContext2D;
 
+	private var _bounds : Rectangle;
+
 	private var _list : IList<Graphics>;
 
-	private var _rendering : Bool;
+	private var _highQuality : Bool;
 
-	public function new(context : CanvasRenderingContext2D) {		
+	public function new(context : CanvasRenderingContext2D, highQuality : Bool) {		
 		_context = context;
+		_highQuality = highQuality;
 
-		_rendering = false;
 		_list = nil.list();
+		_bounds = new Rectangle();
 	}
 
 	public function add(graphics : Graphics, rect : Rectangle) : Void {
@@ -38,25 +43,39 @@ class Painter {
 	}
 
 	public function render() : Void {
-		if(_rendering) return;
-		else {
-			_rendering = true;
+		var graphics : Graphics;
 
-			var p : IList<Graphics> = _list;
-			// TODO : Work out if we're clearing & if we are then work out if we're 
-			// overdrawing. If overdrawing is happening then work out the rendering order
-			// so we invalidate the overdraws.
-			while(p.nonEmpty) {
-				var graphics : Graphics = p.head;
+		// 1) Invalidate all the drawing list from the known graphics max bounds
+		// Note: This is CPU intensive, so should be optimisted - worst case is O(n^2) atm.
+		var p : IList<Graphics> = _list;
+		while(p.nonEmpty) {
+			graphics = p.head;
 
-				// We've not changed, continue.
-				if(!graphics.isDirty) {
-					p = p.tail;
+			// If we're running in high quality we have to oversample everything again!
+			if(_highQuality) {
+				graphics.invalidate();
+			} else if(graphics.isDirty) {
+				markInsersections(graphics, _list);
+			}
 
-					continue;
-				}
+			p = p.tail;
+		}
 
-				var max : Rectangle = graphics.bounds.clone();
+		// 2) Go through the whole drawing list in re-render all the known graphics
+		// If in high quality mode we clear the whole screen rect.
+		if(_highQuality) {
+			_context.clearRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		}
+
+		p = _list;
+		while(p.nonEmpty) {
+			graphics = p.head;
+
+			// The graphics hasn't been invalidated so just continue.
+			if(graphics.isDirty) {
+
+				var hasFill : Bool = false;
+				var hasPathOpen : Bool = false;
 
 				// Render the commands.
 				var commands : IList<IGraphicsCommand> = graphics.commands;
@@ -65,16 +84,28 @@ class Painter {
 
 					switch(command.type) {
 						case BEGIN_FILL(color, alpha): 
+							hasFill = true;
 							_context.fillStyle = StringTools.hex(color, 6);
+
+						case CIRCLE(x, y, radius):
+							if(!hasPathOpen) {
+								hasPathOpen = true;
+								_context.beginPath();
+							}
+							_context.arc(x, y, radius, 0, Math.PI * 2, hasFill);
+
 						case CLEAR(bounds):
+							hasFill = false;
+							hasPathOpen = false;
+							if(!_highQuality) {
+								_context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+							}
 
-							if(bounds.x < max.x) max.x = bounds.x;
-							if(bounds.y < max.y) max.y = bounds.y;
-							if(bounds.width > max.width) max.width = bounds.width;
-							if(bounds.height > max.height) max.height = bounds.height;
-
-							_context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
-						case END_FILL: 
+						case END_FILL:
+							if(hasPathOpen) {
+								hasPathOpen = false;
+								_context.closePath();
+							} 
 							_context.fill();
 						case MOVE_TO(x, y): 
 							_context.moveTo(x, y);
@@ -91,30 +122,29 @@ class Painter {
 					}
 				}
 
-				// Find out if we're overlapping something here (if so mark as invalidated)
-				// TODO : Pre-compute the dirty regions.
-				markInsersections(max, p.tail);
-
 				graphics.validated();
-
-				p = p.tail;
-			}
-
-			_rendering = false;
-		}
-	}
-
-	private function markInsersections(bounds : Rectangle, list : IList<Graphics>) : Void {
-		var p : IList<Graphics> = list;
-		while(p.nonEmpty) {
-			var graphics : Graphics = p.head;
-
-			if(bounds.intersects(graphics.bounds)) {
-				graphics.invalidate();
 			}
 
 			p = p.tail;
 		}
+	}
+
+	private function markInsersections(graphics : Graphics, list : IList<Graphics>) : Void {
+		var p : IList<Graphics> = list;
+		while(p.nonEmpty) {
+			var other : Graphics = p.head;
+
+			// Don't test the bounds if they're the same instance.
+			if(graphics != other && graphics.bounds.intersects(other.bounds)) {
+				other.invalidate();
+			}
+
+			p = p.tail;
+		}
+	}
+
+	private function getBounds() : Rectangle {
+		return _bounds;
 	}
 
 	private function getSize() : Int {

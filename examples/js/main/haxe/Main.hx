@@ -15,7 +15,7 @@ class Main {
 	public function new(){
 		
 		var root = new Root<HTMLCanvasElement>();
-		root.renderManager = new RenderManager<HTMLCanvasElement>();
+		root.renderManager = new RenderManager<HTMLCanvasElement>(true);
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var id : Int = 0;

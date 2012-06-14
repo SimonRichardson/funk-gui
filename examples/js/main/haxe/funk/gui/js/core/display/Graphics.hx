@@ -5,6 +5,7 @@ import funk.collections.immutable.Nil;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.IGraphicsCommand;
 import funk.gui.js.core.display.commands.GraphicsBeginFill;
+import funk.gui.js.core.display.commands.GraphicsCircle;
 import funk.gui.js.core.display.commands.GraphicsClear;
 import funk.gui.js.core.display.commands.GraphicsEndFill;
 import funk.gui.js.core.display.commands.GraphicsMoveTo;
@@ -28,6 +29,8 @@ class Graphics {
 
 	public var bounds(getBounds, never) : Rectangle;
 
+	public var maxBounds(getMaxBounds, never) : Rectangle;
+
 	public var isDirty(getDirty, never) : Bool;
 
 	private var _list : IList<IGraphicsCommand>;
@@ -38,14 +41,14 @@ class Graphics {
 
 	private var _bounds : Rectangle;
 
-	private var _clearBounds : Rectangle;
+	private var _maxBounds : Rectangle;
 
 	private var _dirty : Bool;
 
 	public function new(){
 		_dirty = false;
 		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
-		_clearBounds = new Rectangle();
+		_maxBounds = new Rectangle(0.0, 0.0, 0.0, 0.0);
 
 		_list = nil.list();
 	}
@@ -56,10 +59,10 @@ class Graphics {
 		_tx = 0;
 		_ty = 0;
 
-		_clearBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		_maxBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 
 		_list = nil.list();
-		_list = _list.append(new GraphicsClear(_clearBounds));
+		_list = _list.append(new GraphicsClear(_maxBounds));
 
 		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
@@ -85,6 +88,16 @@ class Graphics {
 		_bounds.y = _ty + y < _bounds.y ? _ty + y : _bounds.y;
 		_bounds.width = width > _bounds.width ? width : _bounds.width;
 		_bounds.height = height > _bounds.height ? height : _bounds.height;
+	}
+
+	public function drawCircle(x : Float, y : Float, radius : Float) : Void {
+		invalidate();
+
+		_list = _list.append(new GraphicsCircle(x, y, radius));
+
+		var r : Float = radius * 2.0;
+		_bounds.width =  r > _bounds.width ? r : _bounds.width;
+		_bounds.height = r > _bounds.height ? r : _bounds.height;
 	}
 
 	public function restore() : Void {
@@ -125,6 +138,10 @@ class Graphics {
 
 	private function getBounds() : Rectangle {
 		return _bounds;
+	}
+
+	private function getMaxBounds() : Rectangle {
+		return _maxBounds;
 	}
 
 	private function getDirty() : Bool {

@@ -31,8 +31,11 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	private var _painter : Painter;
 
 	private var _signal : ISignal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>;
-			
-	public function new(){
+	
+	private var _highQuality : Bool;
+
+	public function new(?highQuality : Bool = false){
+		_highQuality = highQuality;
 		_signal = new Signal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>();
 	}
 	
@@ -61,10 +64,10 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 		_document.body.appendChild(_context);
 
 		_canvas2dContext = _context.getContext("2d");
-		_canvas2dContext.canvas.width = _window.innerWidth;
-		_canvas2dContext.canvas.height = _window.innerHeight;
 
-		_painter = new Painter(_canvas2dContext);
+		_painter = new Painter(_canvas2dContext, _highQuality);
+
+		resizeTo(_window.innerWidth, _window.innerHeight);
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -78,8 +81,30 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	}
 
 	public function resizeTo(width : Float, height : Float) : Void {
-		_canvas2dContext.canvas.width = Std.int(width);
-		_canvas2dContext.canvas.height = Std.int(height);
+		var nw : Int = Std.int(width);
+		var nh : Int = Std.int(height);
+		
+		if(_highQuality) {
+			_context.style.width = nw + "px";
+			_context.style.height = nh + "px";
+
+			var mw : Int = Std.int(nw * 2);
+			var mh : Int = Std.int(nh * 2);
+
+			_canvas2dContext.canvas.width = mw;
+			_canvas2dContext.canvas.height = mh;
+
+			_canvas2dContext.scale(2, 2);
+			
+			_painter.bounds.width = mw;
+			_painter.bounds.height = mh;
+		} else {
+			_canvas2dContext.canvas.width = nw;
+			_canvas2dContext.canvas.height = nh;
+
+			_painter.bounds.width = nw;
+			_painter.bounds.height = nh;
+		}
 
 		// TODO : Cache this, because we don't need to do this every render.
 		for(component in _root) {
@@ -107,6 +132,7 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 
 		notify(POST_RENDER);
 
+		// TODO (Simon) : This shouldn't be done here - we should wait for interactions.
 		Events.render.add(render, true);
 	}
 

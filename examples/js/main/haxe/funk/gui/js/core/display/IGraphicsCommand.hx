@@ -4,6 +4,7 @@ import funk.gui.core.geom.Rectangle;
 
 enum GraphicsCommandType {
 	BEGIN_FILL(color : Int, alpha : Float);
+	CIRCLE(x : Float, y : Float, radius : Float);
 	CLEAR(bounds : Rectangle);
 	END_FILL;
 	MOVE_TO(x : Float, y : Float);
