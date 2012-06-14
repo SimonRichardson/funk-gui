@@ -29,7 +29,7 @@ class Graphics {
 
 	public var bounds(getBounds, never) : Rectangle;
 
-	public var maxBounds(getMaxBounds, never) : Rectangle;
+	public var previousBounds(getPreviousBounds, never) : Rectangle;
 
 	public var isDirty(getDirty, never) : Bool;
 
@@ -41,16 +41,16 @@ class Graphics {
 
 	private var _bounds : Rectangle;
 
-	private var _maxBounds : Rectangle;
+	private var _previousBounds : Rectangle;
 
 	private var _dirty : Bool;
 
 	public function new(){
 		_dirty = false;
-		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
-		_maxBounds = new Rectangle(0.0, 0.0, 0.0, 0.0);
+		_bounds = new Rectangle();
+		_previousBounds = new Rectangle();
 
-		_list = nil.list();
+		clear();
 	}
 
 	public function clear() : Void {
@@ -59,10 +59,10 @@ class Graphics {
 		_tx = 0;
 		_ty = 0;
 
-		_maxBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 
 		_list = nil.list();
-		_list = _list.append(new GraphicsClear(_maxBounds));
+		_list = _list.append(new GraphicsClear(_previousBounds));
 
 		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 	}
@@ -84,10 +84,11 @@ class Graphics {
 
 		_list = _list.append(new GraphicsRectangle(x, y, width, height));
 
-		_bounds.x = _tx + x < _bounds.x ? _tx + x : _bounds.x;
-		_bounds.y = _ty + y < _bounds.y ? _ty + y : _bounds.y;
-		_bounds.width = width > _bounds.width ? width : _bounds.width;
-		_bounds.height = height > _bounds.height ? height : _bounds.height;
+		// Expand the drawing rect.
+		if(_tx + x < _bounds.x) _bounds.x = _tx + x;
+		if(_ty + y < _bounds.y) _bounds.y = _ty + y;
+		if(_tx + width > _bounds.width) _bounds.width = _tx + width;
+		if(_ty + height > _bounds.height) _bounds.height = _ty + height;
 	}
 
 	public function drawCircle(x : Float, y : Float, radius : Float) : Void {
@@ -120,8 +121,8 @@ class Graphics {
 		_tx = x;
 		_ty = y;
 
-		_bounds.x = x < _bounds.x ? x : _bounds.x;
-		_bounds.y = y < _bounds.y ? y : _bounds.y;
+		if(x < _bounds.x) _bounds.x = x;
+		if(y < _bounds.y) _bounds.y = y;
 	}
 
 	public function invalidate() : Void {
@@ -130,6 +131,8 @@ class Graphics {
 
 	public function validated() : Void {
 		_dirty = false;
+
+		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {
@@ -140,8 +143,8 @@ class Graphics {
 		return _bounds;
 	}
 
-	private function getMaxBounds() : Rectangle {
-		return _maxBounds;
+	private function getPreviousBounds() : Rectangle {
+		return _previousBounds;
 	}
 
 	private function getDirty() : Bool {

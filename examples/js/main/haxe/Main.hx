@@ -15,12 +15,12 @@ class Main {
 	public function new(){
 		
 		var root = new Root<HTMLCanvasElement>();
-		root.renderManager = new RenderManager<HTMLCanvasElement>(true);
+		root.renderManager = new RenderManager<HTMLCanvasElement>();
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var id : Int = 0;
-		for(i in 0...10) {
-			for(j in 0...10) {
+		for(i in 0...20) {
+			for(j in 0...20) {
 				var button = new Button(new ButtonView(id++));
 				button.id = id;
 				button.moveTo(i * 31, j * 31);

@@ -20,6 +20,7 @@ import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.events.IEvent;
+import funk.gui.core.events.UIEvent;
 import funk.gui.core.geom.LayoutSize;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
