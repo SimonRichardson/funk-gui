@@ -31,6 +31,8 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 
 	private var _window : Window;
 
+	private var _document : HTMLDocument;
+
 	private var _signal : ISignal2<IComponentEventManager<E>, ComponentEventManagerUpdateType>;
 
 	private var _mouseDown : Bool;
@@ -81,12 +83,15 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_window = untyped __js__("window");
 		_window.onresize = handleEvent;
 
+		_document = CommonJS.getHtmlDocument();
+		//_document.onkeydown = cast handleEvent;
+
 		_context = _root.renderManager.context;
 		_context.addEventListener('mousedown', handleEvent, false);
 		_context.addEventListener('mousemove', handleEvent, false);
 		_context.addEventListener('mouseup', handleEvent, false);
 		_context.addEventListener('click', handleEvent, false);
-
+		
 		onResize(null);
 	}
 	
@@ -94,10 +99,14 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_window.onresize = null;
 		_window = null;
 
+		_document.onkeydown = null;
+		_document = null;
+
 		_context.removeEventListener('mousedown', handleEvent, false);
 		_context.removeEventListener('mousemove', handleEvent, false);
 		_context.removeEventListener('mouseup', handleEvent, false);
 		_context.removeEventListener('click', handleEvent, false);
+		_context.removeEventListener('keydown', handleEvent, false);
 		_context = null;
 		
 		_root = null;
@@ -109,6 +118,7 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 			case 'mousemove': onMouseMove(cast event);
 			case 'mouseup': onMouseUp(cast event);
 			case 'resize': onResize(event);
+			case 'keydown': onKeyDown(cast event);
 		}
 	}
 
@@ -286,6 +296,11 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 
 	private function handleDragInOut() : Void {
 
+	}
+
+	private function onKeyDown(event : KeyboardEvent) : Void {
+		var keyCode : Int = cast event.keyLocation;
+		dispatchEvent(focus, new UIEvent(KEY_DOWN(keyCode, event.ctrlKey, event.shiftKey, event.altKey)));
 	}
 
 	private function onResize(event : Event) : Void {

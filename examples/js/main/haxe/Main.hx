@@ -19,13 +19,15 @@ class Main {
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var id : Int = 0;
-		for(i in 0...20) {
-			for(j in 0...20) {
-				var button = new Button(new ButtonView(id++));
+		for(i in 0...1) {
+			for(j in 0...5) {
+				var button = new Button(new ButtonView(id));
 				button.id = id;
-				button.moveTo(i * 31, j * 31);
+				button.moveTo(j * 31, i * 31);
 				button.resizeTo(30, 30);
 				root.add(button);
+
+				id++;
 			}
 		}
 

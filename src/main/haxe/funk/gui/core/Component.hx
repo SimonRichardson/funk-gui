@@ -128,6 +128,7 @@ class Component implements IComponent {
 				case MOUSE_MOVE(position, downPosition): 
 				case MOUSE_UP(position): pressed = false;
 				case MOUSE_OUT(position): hovered = false;
+				default:
 			}
 		}
 	}

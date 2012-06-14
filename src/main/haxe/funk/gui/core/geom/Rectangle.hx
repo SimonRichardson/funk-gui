@@ -25,12 +25,18 @@ class Rectangle {
 	public var bottomRight(getBottomRight, setBottomRight) : Point;
 
 	public function new(?x : Float = 0.0, ?y : Float = 0.0, ?w : Float = 0.0, ?h : Float = 0.0) {
-		moveTo(x, y);
-		resizeTo(w, h);
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
 	}
 
 	public function clone() : Rectangle {
 		return new Rectangle(x, y, width, height);
+	}
+
+	public function equals(rect : Rectangle) : Bool {
+		return x == rect.x && y == rect.y && width == rect.width && height == rect.height;
 	}
 
 	public function setValues(x : Float, y : Float, w : Float, h : Float) : Void {

@@ -47,10 +47,8 @@ class Graphics {
 
 	public function new(){
 		_dirty = false;
-		_bounds = new Rectangle();
+		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, 0, 0);
 		_previousBounds = new Rectangle();
-
-		clear();
 	}
 
 	public function clear() : Void {
@@ -64,7 +62,7 @@ class Graphics {
 		_list = nil.list();
 		_list = _list.append(new GraphicsClear(_previousBounds));
 
-		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
+		_bounds.setValues(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, 0, 0);
 	}
 
 	public function endFill() : Void {
@@ -87,8 +85,8 @@ class Graphics {
 		// Expand the drawing rect.
 		if(_tx + x < _bounds.x) _bounds.x = _tx + x;
 		if(_ty + y < _bounds.y) _bounds.y = _ty + y;
-		if(_tx + width > _bounds.width) _bounds.width = _tx + width;
-		if(_ty + height > _bounds.height) _bounds.height = _ty + height;
+		if(width > _bounds.width) _bounds.width = width;
+		if(height > _bounds.height) _bounds.height = height;
 	}
 
 	public function drawCircle(x : Float, y : Float, radius : Float) : Void {
@@ -97,8 +95,11 @@ class Graphics {
 		_list = _list.append(new GraphicsCircle(x, y, radius));
 
 		var r : Float = radius * 2.0;
-		_bounds.width =  r > _bounds.width ? r : _bounds.width;
-		_bounds.height = r > _bounds.height ? r : _bounds.height;
+
+		if(_tx + x < _bounds.x) _bounds.x = _tx + x;
+		if(_ty + y < _bounds.y) _bounds.y = _ty + y;
+		if(r > _bounds.width) _bounds.width = r;
+		if(r > _bounds.height) _bounds.height = r;
 	}
 
 	public function restore() : Void {
@@ -132,7 +133,7 @@ class Graphics {
 	public function validated() : Void {
 		_dirty = false;
 
-		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		//_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {

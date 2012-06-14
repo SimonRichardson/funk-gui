@@ -11,6 +11,7 @@ enum UIEventType {
 	MOUSE_MOVE(position : Point, downPosition : Point);
 	MOUSE_UP(position : Point);
 	MOUSE_OUT(position : Point);
+	KEY_DOWN(keyCode : Int, ctrlKey : Bool, shiftKey : Bool, altKey : Bool);
 }
 
 class UIEvent {
