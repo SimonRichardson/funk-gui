@@ -70,7 +70,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 		var radius : Float = width * 0.5;
 		var dx : Float = radius - (point.x - bounds.x);
 		var dy : Float = radius - (point.y - bounds.y);
-		return Math.sqrt(dx * dx + dy * dy) <= radius;
+		return dx * dx + dy * dy <= radius * radius;
 		//return bounds.containsPoint(point);
 	}
 	

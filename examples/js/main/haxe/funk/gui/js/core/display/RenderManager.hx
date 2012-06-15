@@ -2,8 +2,10 @@ package funk.gui.js.core.display;
 
 import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.display.IComponentRenderManagerObserver;
+import funk.gui.core.events.ContainerEvent;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
+import funk.gui.core.IContainerObserver;
 import funk.gui.js.core.event.Events;
 import funk.signal.Signal2;
 
@@ -12,7 +14,8 @@ import js.w3c.DOMTypes;
 import js.w3c.html5.Canvas2DContext;
 import js.w3c.html5.Core;
 
-class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E> {
+class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E>, 
+											implements IContainerObserver {
 	
 	inline public static var ELEMENT_ID : String = "gui-hx";
 	
@@ -34,6 +37,8 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	
 	private var _highQuality : Bool;
 
+	private var _rootModified : Bool;
+
 	public function new(?highQuality : Bool = false){
 		_highQuality = highQuality;
 		_signal = new Signal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>();
@@ -53,6 +58,7 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 	
 	public function onRenderManagerInitialize(root : IComponentRoot<E>) : Void {
 		_root = root;
+		_root.addContainerObserver(this);
 
 		_window = untyped __js__("window");
 		_document = CommonJS.getHtmlDocument();
@@ -106,28 +112,37 @@ class RenderManager<E : HTMLCanvasElement> implements IComponentRenderManager<E>
 			_painter.bounds.height = nh;
 		}
 
-		// TODO : Cache this, because we don't need to do this every render.
-		for(component in _root) {
-			if(Std.is(component.view, GraphicsComponentView)) {
-				var view : GraphicsComponentView = cast component.view;				
-				view.graphics.invalidate();
-			}
+		// Grab the iterator and invalidate them if we resize.
+		var itr : Iterator<Graphics> = _painter.iterator();
+		for(g in itr) {
+			g.invalidate();
+		}
+	}
+
+	public function onContainerUpdate(event : ContainerEvent) : Void {
+		switch(event.type) {
+			case ContainerEventType.COMPONENT_ADDED:
+				_rootModified = true;
 		}
 	}
 	
 	private function render() : Void {
 		notify(PRE_RENDER);
 
-		_painter.removeAll();
+		if(_rootModified) {
+			// Remove all the components (quicker) and re-add.
+			_painter.removeAll();
 
-		// TODO : Cache this, because we don't need to do this every render.
-		for(component in _root) {
-			if(Std.is(component.view, GraphicsComponentView)) {
-				var view : GraphicsComponentView = cast component.view;
-				_painter.add(view.graphics, view.bounds);
+			for(component in _root) {
+				if(Std.is(component.view, GraphicsComponentView)) {
+					var view : GraphicsComponentView = cast component.view;
+					_painter.add(view.graphics, view.bounds);
+				}
 			}
+
+			_rootModified = false;
 		}
-		
+
 		_painter.render();
 
 		notify(POST_RENDER);

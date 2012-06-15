@@ -7,6 +7,7 @@ import funk.option.Option;
 import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.display.IComponentRenderManagerObserver;
 import funk.gui.core.display.QuadTree;
+import funk.gui.core.events.ContainerEvent;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.events.IComponentEventTarget;
@@ -15,6 +16,8 @@ import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
+import funk.gui.core.IContainerObserver;
+import funk.signal.Signal1;
 
 using funk.option.Any;
 
@@ -35,16 +38,28 @@ class Root<E> 	implements IComponentRoot<E>,
 	private var _bounds : Rectangle;
 
 	private var _quadTree : IQuadTree<IComponent>;
+
+	private var _signal : ISignal1<ContainerEvent>;
 	
 	public function new() {
 		_bounds = new Rectangle(0, 0, 250, 250);
 		_quadTree = new QuadTree<IComponent>(250, 250);
+
+		_signal = new Signal1<ContainerEvent>();
+	}
+
+	public function addContainerObserver(observer : IContainerObserver) : Void {
+		_signal.add(observer.onContainerUpdate);
+	}
+
+	public function removeContainerObserver(observer : IContainerObserver) : Void {
+		_signal.remove(observer.onContainerUpdate);
 	}
 	
 	public function add(component : IComponent) : IComponent {
 		_quadTree = _quadTree.add(component);
 
-		invalidate();
+		notify(ContainerEventType.COMPONENT_ADDED);
 
 		return component;
 	}
@@ -52,7 +67,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function addAt(component : IComponent, index : Int) : IComponent {
 		_quadTree = _quadTree.addAt(component, index);
 
-		invalidate();
+		notify(ContainerEventType.COMPONENT_ADDED);
 
 		return component;
 	}
@@ -144,6 +159,10 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	public function processEvent(event : UIEvent) : Void {
 
+	}
+
+	public function notify(type : ContainerEventType) : Void {
+		_signal.dispatch(new ContainerEvent(type));
 	}
 	
 	private function get_size() : Int {

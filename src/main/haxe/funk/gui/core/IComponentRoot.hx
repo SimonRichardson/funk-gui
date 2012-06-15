@@ -16,6 +16,10 @@ interface IComponentRoot<E> implements IComponentEventTarget {
 
 	var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
 
+	function addContainerObserver(observer : IContainerObserver) : Void;
+
+	function removeContainerObserver(observer : IContainerObserver) : Void;
+
 	function getComponentsIntersectsPoint(point : Point) : IList<IComponent>;
 
 	function getComponentsIntersectsRectangle(rect : Rectangle) : IList<IComponent>;

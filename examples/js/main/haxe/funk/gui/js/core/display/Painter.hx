@@ -192,6 +192,10 @@ class Painter {
 		}
 	}
 
+	public function iterator() : Iterator<Graphics> {
+		return _list.iterator();
+	}
+
 	private function markInvalidatedGraphics(graphics : Graphics, list : IList<Graphics>) : Void {
 		var p : IList<Graphics> = list;
 		while(p.nonEmpty) {
