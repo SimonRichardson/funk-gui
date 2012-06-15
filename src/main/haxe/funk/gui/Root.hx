@@ -124,7 +124,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	}
 
 	public function captureEventTarget(point : Point) : IComponentEventTarget {
-		var items : IList<IComponent> = getComponentsIntersectsPoint(point);
+		var items : IList<IComponent> = getComponentsIntersectsPoint(point).reverse;
 		for(item in items) {
 			var component : IComponent = item;
 			var target : IComponentEventTarget = component.captureEventTarget(point);

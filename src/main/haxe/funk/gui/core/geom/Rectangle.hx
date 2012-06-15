@@ -72,8 +72,15 @@ class Rectangle {
 				(rw >= x && rw < right && rh >= y && rh < bottom);
 	}
 
-	public function intersects(rect : Rectangle) : Bool {
+	inline public function intersects(rect : Rectangle) : Bool {
 		return !(rect.x > right || rect.right < left || rect.top > bottom || rect.bottom < top);
+	}
+
+	public function expand(value : Float) : Void {
+		x -= value;
+		y -= value;
+		width += value;
+		height += value;
 	}
 	
 	public function union(rect : Rectangle) : Rectangle {

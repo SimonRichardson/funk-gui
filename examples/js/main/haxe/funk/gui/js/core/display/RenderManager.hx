@@ -83,7 +83,7 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 	}
 	
 	public function invalidate() : Void {
-		Events.render.add(render, true);	
+		Events.render.add(render);	
 	}
 
 	public function resizeTo(width : Float, height : Float) : Void {
@@ -127,6 +127,8 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 	}
 	
 	private function render() : Void {
+		//untyped __js__("stats.begin();");
+
 		notify(PRE_RENDER);
 
 		if(_rootModified) {
@@ -147,8 +149,7 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 		notify(POST_RENDER);
 
-		// TODO (Simon) : This shouldn't be done here - we should wait for interactions.
-		Events.render.add(render, true);
+		//untyped __js__ ("stats.end();");
 	}
 
 	private function notify(type : ComponentRenderManagerUpdateType) : Void {

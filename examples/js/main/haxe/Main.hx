@@ -31,10 +31,7 @@ class Main {
 			}
 		}
 
-		/*var button = new Button(new ButtonView());
-		button.moveTo(10, 20);
-		button.resizeTo(100, 50);
-		root.add(button);
+		/*
 		
 		var toggle = new ToggleButton(new ToggleButtonView());
 		toggle.selected = true;

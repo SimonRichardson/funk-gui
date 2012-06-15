@@ -15,13 +15,11 @@ class Events {
 
 class RenderEvent extends AbstractEvent, implements IEvent {
 
-	inline private static var RENDER_TIME_STEP : Int = 100;
+	inline private static var RENDER_TIME_STEP : Int = Std.int(1000 / 20);
 
 	inline private static var POST_RENDER_TIME_STEP : Int = 1;
 
 	private var _window : Window;
-
-	private var _requested : Bool;
 
 	private var _invalidated : Bool;
 
@@ -32,7 +30,6 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 
 		_window = untyped __js__("window");
 
-		_requested = false;
 		_invalidated = false;
 
 		_requestAnimationFrame = Reflect.field(_window, 'requestAnimationFrame') || 
@@ -55,25 +52,22 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 		if(!_invalidated) {
 			_invalidated = true;
 
-			// This shouldn't be possible, without the use of Reflect!
-			_requestAnimationFrame.call(_window, render);
-		} else {
-			_requested = true;
+			request();
 		}
 	}
 
 	private function render() : Void {
 		notify();
 
-		if(_requested) {
-			Timer.delay(function() : Void {
-				_requested = false;
-
-				_requestAnimationFrame.call(_window, render);	
-			}, POST_RENDER_TIME_STEP);
+		if(size > 0) {
+			request();
 		} else {
-			_requested = false;
 			_invalidated = false;
 		}
+	}
+
+	private function request() : Void {
+		// This shouldn't be possible, without the use of Reflect!
+		_requestAnimationFrame.call(_window, render);
 	}
 }

@@ -28,6 +28,8 @@ class Painter {
 
 	private var _debugging : Bool;
 
+	private var _overdraw : Bool;
+
 	private var _mergeIntersections : Bool;
 
 	public function new(context : CanvasRenderingContext2D, highQuality : Bool) {		
@@ -38,7 +40,9 @@ class Painter {
 		_bounds = new Rectangle();
 
 		_debugging = false;
-		_mergeIntersections = false;
+
+		_overdraw = false;
+		_mergeIntersections = true;
 
 		var document = CommonJS.getHtmlDocument();
 		document.onkeydown = function(event : Dynamic) : Void {
@@ -90,15 +94,8 @@ class Painter {
 			while(p.nonEmpty) {
 				graphics = p.head;
 				if(graphics.isDirty) {
-					var curBounds : Rectangle = graphics.bounds;
-					//clearRects = clearRects.prepend(curBounds);
-					clearRects = markIntersections(curBounds, clearRects);
-
 					var preBounds : Rectangle = graphics.previousBounds;
-					if(!preBounds.equals(curBounds)) {
-						//clearRects = clearRects.prepend(preBounds);
-						clearRects = markIntersections(preBounds, clearRects);
-					}
+					clearRects = markIntersections(preBounds, clearRects);
 				}
 				p = p.tail;
 			}
@@ -107,14 +104,33 @@ class Painter {
 			// We could self loop on clearRects with markIntersections so we end up with 
 			// a tighter list.
 
-			// Now clear the rects
-			var b : IList<Rectangle> = clearRects;
-			while(b.nonEmpty) {
-				var rect : Rectangle = b.head;
-				if(rect.width > 0 && rect.height > 0) {
-					_context.clearRect(rect.x, rect.y, rect.width, rect.height);
+			// 2B) If we've unified clearRects we could be over writting some extra graphics
+			// which could prevent redraws.
+			if(_mergeIntersections) {
+				// Go back through and work out which ones have now been invalidated by the new
+				// intersections.
+				var p : IList<Graphics> = _list;
+				while(p.nonEmpty) {
+					graphics = p.head;
+
+					if(!graphics.isDirty) {
+						remarkInvalidatedGraphics(graphics, clearRects);						
+					}
+
+					p = p.tail;
 				}
-				b = b.tail;
+			}
+
+			// 2C) Clear the context
+			if(!_overdraw) {
+				var b : IList<Rectangle> = clearRects;
+				while(b.nonEmpty) {
+					var rect : Rectangle = b.head;
+					if(rect.width > 0 && rect.height > 0) {
+						_context.clearRect(rect.x, rect.y, rect.width, rect.height);
+					}
+					b = b.tail;
+				}
 			}
 		}
 
@@ -197,28 +213,50 @@ class Painter {
 	}
 
 	private function markInvalidatedGraphics(graphics : Graphics, list : IList<Graphics>) : Void {
-		var p : IList<Graphics> = list;
-		while(p.nonEmpty) {
-			var other : Graphics = p.head;
+		if(list.nonEmpty) {
+			// Cache these here.
+			var gb : Rectangle = graphics.bounds;
+			var gpb : Rectangle = graphics.previousBounds;
 
-			// Don't test the bounds if they're the same instance.
-			if(graphics != other && !other.isDirty) {
-				// Work out if any bounds overlap.
-				var gb : Rectangle = graphics.bounds;
-				var gpb : Rectangle = graphics.previousBounds;
-				var ob : Rectangle = other.bounds;
-				var opb : Rectangle = other.previousBounds;
+			var p : IList<Graphics> = list;
+			while(p.nonEmpty) {
+				var other : Graphics = p.head;
 
-				if(	gb.intersects(ob) || 
-					gpb.intersects(ob) ||
-					gb.intersects(opb) || 
-					gpb.intersects(opb)) {
+				// Don't test the bounds if they're the same instance.
+				if(graphics != other && !other.isDirty) {
+					// Work out if any bounds overlap.
+					var ob : Rectangle = other.bounds;
+					var opb : Rectangle = other.previousBounds;
 
-					other.invalidate();
+					if(	gb.intersects(ob) || 
+						gpb.intersects(ob) ||
+						gb.intersects(opb) || 
+						gpb.intersects(opb)) {
+
+						other.invalidate();
+					}
 				}
-			}
 
-			p = p.tail;
+				p = p.tail;
+			}
+		}
+	}
+
+	private function remarkInvalidatedGraphics(graphics : Graphics, list : IList<Rectangle>) : Void {
+		if(list.nonEmpty) {
+			// Cache these here.
+			var gb : Rectangle = graphics.bounds;
+			var gpb : Rectangle = graphics.previousBounds;
+
+			var p : IList<Rectangle> = list;
+			while(p.nonEmpty) {
+				var other : Rectangle = p.head;
+				if(gb.intersects(other) || gpb.intersects(other)) {
+					graphics.invalidate();
+				}
+
+				p = p.tail;
+			}
 		}
 	}
 
