@@ -19,8 +19,8 @@ class Main {
 		root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var id : Int = 0;
-		for(i in 0...5) {
-			for(j in 0...5) {
+		for(i in 0...50) {
+			for(j in 0...50) {
 				var button = new Button(new ButtonView(id));
 				button.id = id;
 				button.moveTo(j * 31, i * 31);

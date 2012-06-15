@@ -91,7 +91,9 @@ class Painter {
 					clearRects = clearRects.prepend(curBounds);
 
 					var preBounds : Rectangle = graphics.previousBounds;
-					clearRects = clearRects.prepend(preBounds);
+					if(!preBounds.equals(curBounds)) {
+						clearRects = clearRects.prepend(preBounds);
+					}
 					//clearRects = markIntersections(preBounds, clearRects);
 				}
 				p = p.tail;
@@ -100,6 +102,8 @@ class Painter {
 			// TODO (Simon) : Work out if the rect angles are many and if so - possibly merge.
 			// We could self loop on clearRects with markIntersections so we end up with 
 			// a tighter list.
+
+			trace(clearRects.size);
 
 			// Now clear the rects
 			var b : IList<Rectangle> = clearRects;
@@ -119,8 +123,6 @@ class Painter {
 
 			// The graphics hasn't been invalidated so just continue.
 			if(graphics.isDirty) {
-
-				trace("Render : " + graphics);
 
 				var hasFill : Bool = false;
 				var hasPathOpen : Bool = false;
@@ -205,8 +207,6 @@ class Painter {
 					gpb.intersects(ob) ||
 					gb.intersects(opb) || 
 					gpb.intersects(opb)) {
-
-					trace("Check : " + graphics + ", other : " + other);
 
 					other.invalidate();
 				}

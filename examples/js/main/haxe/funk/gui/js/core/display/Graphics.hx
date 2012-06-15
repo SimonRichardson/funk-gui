@@ -63,8 +63,6 @@ class Graphics {
 		} else {
 			_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);	
 		}
-
-		trace("Clear : " + this + ", bounds : " + _previousBounds);
 		
 		_list = nil.list();
 		_list = _list.append(new GraphicsClear(_previousBounds));
