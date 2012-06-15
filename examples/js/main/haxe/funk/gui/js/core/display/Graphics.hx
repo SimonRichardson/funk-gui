@@ -104,8 +104,11 @@ class Graphics {
 
 		var r : Float = radius * 2.0;
 
-		if(_tx + x < _bounds.x) _bounds.x = _tx + x;
-		if(_ty + y < _bounds.y) _bounds.y = _ty + y;
+		var tx : Float = _tx + x - radius;
+		var ty : Float = _ty + y - radius;
+
+		if(tx < _bounds.x) _bounds.x = tx;
+		if(ty < _bounds.y) _bounds.y = ty;
 		if(r > _bounds.width) _bounds.width = r;
 		if(r > _bounds.height) _bounds.height = r;
 	}

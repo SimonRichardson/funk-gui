@@ -28,6 +28,8 @@ class Painter {
 
 	private var _debugging : Bool;
 
+	private var _mergeIntersections : Bool;
+
 	public function new(context : CanvasRenderingContext2D, highQuality : Bool) {		
 		_context = context;
 		_highQuality = highQuality;
@@ -36,6 +38,7 @@ class Painter {
 		_bounds = new Rectangle();
 
 		_debugging = false;
+		_mergeIntersections = false;
 
 		var document = CommonJS.getHtmlDocument();
 		document.onkeydown = function(event : Dynamic) : Void {
@@ -88,13 +91,14 @@ class Painter {
 				graphics = p.head;
 				if(graphics.isDirty) {
 					var curBounds : Rectangle = graphics.bounds;
-					clearRects = clearRects.prepend(curBounds);
+					//clearRects = clearRects.prepend(curBounds);
+					clearRects = markIntersections(curBounds, clearRects);
 
 					var preBounds : Rectangle = graphics.previousBounds;
 					if(!preBounds.equals(curBounds)) {
-						clearRects = clearRects.prepend(preBounds);
+						//clearRects = clearRects.prepend(preBounds);
+						clearRects = markIntersections(preBounds, clearRects);
 					}
-					//clearRects = markIntersections(preBounds, clearRects);
 				}
 				p = p.tail;
 			}
@@ -102,8 +106,6 @@ class Painter {
 			// TODO (Simon) : Work out if the rect angles are many and if so - possibly merge.
 			// We could self loop on clearRects with markIntersections so we end up with 
 			// a tighter list.
-
-			trace(clearRects.size);
 
 			// Now clear the rects
 			var b : IList<Rectangle> = clearRects;
@@ -219,32 +221,44 @@ class Painter {
 	private function markIntersections(rect : Rectangle, list : IList<Rectangle>) : IList<Rectangle> {
 		var result : IList<Rectangle> = list;
 
-		var added : Bool = false;
-/*
-		var p : IList<Rectangle> = list;
-		while(p.nonEmpty) {
-			var r : Rectangle = p.head;
+		if(_mergeIntersections) {
+			var added : Bool = false;
+			
+			var p : IList<Rectangle> = result;
+			while(p.nonEmpty) {
+				var r : Rectangle = p.head;
 
-			if(rect.intersects(r)) {
-				added = true;
+				if(r.intersects(rect)) {
+					added = true;
 
-				// expand current item
-				if(rect.x < r.x) r.x = rect.x;
-				if(rect.y < r.y) r.y = rect.y;
-				if(rect.right > r.right) r.width = rect.right - r.x;
-				if(rect.height > r.height) r.height = rect.bottom - r.y;
+					union(r, rect);
 
-				break;
-			} 
+					break;
+				} 
 
-			p = p.tail;
-		}*/
+				p = p.tail;
+			}
 
-		if(!added) {
-			result = result.prepend(rect.clone());
+			if(!added) {
+				result = result.prepend(rect.clone());
+			}
+		} else {
+			result = result.prepend(rect);
 		}
 
 		return result;
+	}
+
+	inline private function union(a : Rectangle, b : Rectangle) : Void {
+		var x : Float = a.x < b.x ? a.x : b.x;
+    	var y : Float = a.y < b.y ? a.y : b.y;
+    	var w : Float = a.right > b.right ? a.right : b.right;
+    	var h : Float = a.bottom > b.bottom ? a.bottom : b.bottom;
+
+    	a.x = x;
+    	a.y = y;
+    	a.width = w - x;
+    	a.height = h - y;
 	}
 
 	private function getBounds() : Rectangle {

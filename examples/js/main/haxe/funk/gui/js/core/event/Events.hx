@@ -17,7 +17,7 @@ class RenderEvent extends AbstractEvent, implements IEvent {
 
 	inline private static var RENDER_TIME_STEP : Int = 100;
 
-	inline private static var POST_RENDER_TIME_STEP : Int = 10;
+	inline private static var POST_RENDER_TIME_STEP : Int = 1;
 
 	private var _window : Window;
 

@@ -77,10 +77,11 @@ class Rectangle {
 	}
 	
 	public function union(rect : Rectangle) : Rectangle {
-		var nx = x > rect.x  ? rect.x : x;
-		var nr = right < rect.right  ? rect.right : right;
-		var ny = y > rect.y  ? rect.y : y;
-		var nb = bottom < rect.bottom  ? rect.bottom : bottom;
+		var nx = x < rect.x ? x : rect.x;
+		var ny = y < rect.y ? y : rect.y;
+		var nr = right > rect.right ? right : rect.right;
+		var nb = bottom > rect.bottom ? bottom : rect.bottom;
+
 		return new Rectangle(nx, ny, nr - nx, nb - ny);
 	}
 
@@ -89,7 +90,7 @@ class Rectangle {
 	}
 
 	private function setLeft(value : Float) : Float {
-		width -= value - x;
+		width += x - value;
 		x = value;
 		return value;
 	}
@@ -99,7 +100,7 @@ class Rectangle {
 	}
 
 	private function setRight(value : Float) : Float {
-		width = value - x;
+		width = Math.max(value - x, 0);
 		return value;
 	}
 
@@ -108,7 +109,7 @@ class Rectangle {
 	}
 
 	private function setTop(value : Float) : Float {
-		height -= value - y;
+		height += y - value;
 		y = value;
 		return value;
 	}
@@ -118,7 +119,7 @@ class Rectangle {
 	}
 
 	private function setBottom(value : Float) : Float {
-		height = value - y;
+		height = Math.max(value - y, 0);
 		return value;
 	}
 
@@ -127,8 +128,8 @@ class Rectangle {
 	}
 
 	private function setTopLeft(value : Point) : Point {
-		x = value.x;
-		y = value.y;
+		left = value.x;
+		top = value.y;
 		return value;
 	}
 
@@ -137,8 +138,8 @@ class Rectangle {
 	}
 
 	private function setBottomRight(value : Point) : Point {
-		width = value.x - x;
-		height = value.y - y;
+		right = value.x;
+		bottom = value.y;
 		return value;
 	}
 
