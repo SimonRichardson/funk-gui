@@ -8,6 +8,7 @@ import funk.gui.js.core.display.IGraphicsCommand;
 import funk.option.Any;
 
 import js.w3c.html5.Canvas2DContext;
+import js.w3c.html5.Core;
 
 using funk.collections.immutable.Nil;
 using funk.option.Any;
@@ -18,6 +19,8 @@ class Painter {
 
 	public var size(getSize, never) : Int;
 
+	public var debug(getDebug, setDebug) : Bool;
+
 	private var _context : CanvasRenderingContext2D;
 
 	private var _bounds : Rectangle;
@@ -26,28 +29,28 @@ class Painter {
 
 	private var _highQuality : Bool;
 
-	private var _debugging : Bool;
-
 	private var _overdraw : Bool;
 
 	private var _mergeIntersections : Bool;
 
-	public function new(context : CanvasRenderingContext2D, highQuality : Bool) {		
+	private var _debug : Bool;
+
+	private var _debugContext : CanvasRenderingContext2D;
+
+	public function new(	context : CanvasRenderingContext2D, 
+							debugContext : CanvasRenderingContext2D,
+							highQuality : Bool) {		
 		_context = context;
+		_debugContext = debugContext;
 		_highQuality = highQuality;
 
 		_list = nil.list();
 		_bounds = new Rectangle();
 
-		_debugging = false;
+		_debug = false;
 
 		_overdraw = false;
 		_mergeIntersections = true;
-
-		var document = CommonJS.getHtmlDocument();
-		document.onkeydown = function(event : Dynamic) : Void {
-			_debugging = !_debugging;
-		};
 	}
 
 	public function add(graphics : Graphics, rect : Rectangle) : Void {
@@ -191,20 +194,19 @@ class Painter {
 		}
 
 		// 4) Draw the drawing rects.
-		// TODO (Simon) : Dump this on a different context!
-		if(_debugging && clearRects.nonEmpty) {
-			_context.save();
+		if(_debug && clearRects.nonEmpty) {
+			_debugContext.save();
 			
-			_context.fillStyle = "rgba(255, 0, 0, 0.2)";
+			_debugContext.fillStyle = "rgba(255, 0, 0, 0.2)";
 
 			var b : IList<Rectangle> = clearRects;
 			while(b.nonEmpty) {
 				var cr : Rectangle = b.head;
-				_context.fillRect(cr.x, cr.y, cr.width, cr.height);
+				_debugContext.fillRect(cr.x, cr.y, cr.width, cr.height);
 				b = b.tail;
 			}
 
-			_context.restore();
+			_debugContext.restore();
 		}
 	}
 
@@ -309,5 +311,19 @@ class Painter {
 
 	private function getSize() : Int {
 		return _list.size;
+	}
+
+	private function getDebug() : Bool {
+		return _debug;
+	}
+
+	private function setDebug(value : Bool) : Bool {
+		_debug = value;
+
+		if(_debug) {
+			_debugContext.fillRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		}
+		
+		return _debug;
 	}
 }

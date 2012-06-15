@@ -1,13 +1,13 @@
 var background = #1d1d1d;
 
 var default = {
-	background-color: $background;
 	margin: 0px;
 	padding: 0px;
 }
 
 body {
 	$default;
+	background-color: $background;
 }
 
 canvas {
@@ -15,5 +15,4 @@ canvas {
 	position: absolute;
 	top:0px;
 	left:0px;
-	border: 1px solid #ff00ff;
 }

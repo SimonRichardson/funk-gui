@@ -31,6 +31,10 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 	private var _canvas2dContext : CanvasRenderingContext2D;
 
+	private var _debugContext : E;
+
+	private var _debugCanvas2dContext : CanvasRenderingContext2D;
+
 	private var _painter : Painter;
 
 	private var _signal : ISignal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>;
@@ -71,9 +75,27 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 		_canvas2dContext = _context.getContext("2d");
 
-		_painter = new Painter(_canvas2dContext, _highQuality);
+		_debugContext = CommonJS.newElement("canvas", _document);
+		_debugContext.id = "gui-hx-debug";
+		_debugContext.className = "gui-hx-debug-canvas";
+
+		_debugCanvas2dContext = _debugContext.getContext("2d");
+
+		_painter = new Painter(_canvas2dContext, _debugCanvas2dContext, _highQuality);
 
 		resizeTo(_window.innerWidth, _window.innerHeight);
+
+		// TODO (Simon) : This needs fixing.
+		_document.onkeydown = function(event : Dynamic) : Void {
+			_painter.debug = !_painter.debug;
+			if(_painter.debug) {
+				_document.body.appendChild(_debugContext);
+			} else {
+				_document.body.removeChild(_debugContext);
+			}
+
+			resizeTo(_window.innerWidth, _window.innerHeight);
+		};
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -112,6 +134,11 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 			_painter.bounds.height = nh;
 		}
 
+		if(_painter.debug) {
+			_debugCanvas2dContext.canvas.width = nw;
+			_debugCanvas2dContext.canvas.height = nh;
+		}
+
 		// Grab the iterator and invalidate them if we resize.
 		var itr : Iterator<Graphics> = _painter.iterator();
 		for(g in itr) {
@@ -131,6 +158,7 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 		notify(PRE_RENDER);
 
+		// 1) Only re-add contents after the root has been modified.
 		if(_rootModified) {
 			// Remove all the components (quicker) and re-add.
 			_painter.removeAll();
@@ -145,6 +173,7 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 			_rootModified = false;
 		}
 
+		// 2) Render the contents.
 		_painter.render();
 
 		notify(POST_RENDER);

@@ -86,11 +86,13 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_document = CommonJS.getHtmlDocument();
 		//_document.onkeydown = cast handleEvent;
 
+		// TODO (Simon) : Where should this attach mouse events.
 		_context = _root.renderManager.context;
-		_context.addEventListener('mousedown', handleEvent, false);
-		_context.addEventListener('mousemove', handleEvent, false);
-		_context.addEventListener('mouseup', handleEvent, false);
-		_context.addEventListener('click', handleEvent, false);
+
+		_document.body.addEventListener('mousedown', handleEvent, false);
+		_document.body.addEventListener('mousemove', handleEvent, false);
+		_document.body.addEventListener('mouseup', handleEvent, false);
+		_document.body.addEventListener('click', handleEvent, false);
 		
 		onResize(null);
 	}
@@ -102,11 +104,12 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_document.onkeydown = null;
 		_document = null;
 
-		_context.removeEventListener('mousedown', handleEvent, false);
-		_context.removeEventListener('mousemove', handleEvent, false);
-		_context.removeEventListener('mouseup', handleEvent, false);
-		_context.removeEventListener('click', handleEvent, false);
-		_context.removeEventListener('keydown', handleEvent, false);
+		_document.body.removeEventListener('mousedown', handleEvent, false);
+		_document.body.removeEventListener('mousemove', handleEvent, false);
+		_document.body.removeEventListener('mouseup', handleEvent, false);
+		_document.body.removeEventListener('click', handleEvent, false);
+		_document.body.removeEventListener('keydown', handleEvent, false);
+		
 		_context = null;
 		
 		_root = null;
