@@ -57,8 +57,15 @@ class Graphics {
 		_tx = 0;
 		_ty = 0;
 
-		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		if( _bounds.x == DEFAULT_MAX_VALUE && _bounds.y == DEFAULT_MAX_VALUE &&
+			_bounds.width == DEFAULT_MIN_VALUE && _bounds.height == DEFAULT_MIN_VALUE) {
+			_previousBounds.setValues(0, 0, 0, 0);
+		} else {
+			_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);	
+		}
 
+		trace("Clear : " + this + ", bounds : " + _previousBounds);
+		
 		_list = nil.list();
 		_list = _list.append(new GraphicsClear(_previousBounds));
 
@@ -136,7 +143,7 @@ class Graphics {
 	public function validated() : Void {
 		_dirty = false;
 
-		//_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {

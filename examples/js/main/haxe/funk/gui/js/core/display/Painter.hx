@@ -87,15 +87,12 @@ class Painter {
 			while(p.nonEmpty) {
 				graphics = p.head;
 				if(graphics.isDirty) {
+					var curBounds : Rectangle = graphics.bounds;
+					clearRects = clearRects.prepend(curBounds);
 
-					var pBounds : Rectangle = graphics.previousBounds;
-					var cBounds : Rectangle = graphics.bounds;
-
-					clearRects = markIntersections(cBounds, clearRects);
-					if(!cBounds.equals(pBounds)) {
-						// Only mark other intersections if previous does not equal bounds
-						clearRects = markIntersections(pBounds, clearRects);
-					}
+					var preBounds : Rectangle = graphics.previousBounds;
+					clearRects = clearRects.prepend(preBounds);
+					//clearRects = markIntersections(preBounds, clearRects);
 				}
 				p = p.tail;
 			}
@@ -122,6 +119,8 @@ class Painter {
 
 			// The graphics hasn't been invalidated so just continue.
 			if(graphics.isDirty) {
+
+				trace("Render : " + graphics);
 
 				var hasFill : Bool = false;
 				var hasPathOpen : Bool = false;
@@ -177,7 +176,7 @@ class Painter {
 			_context.save();
 			
 			_context.fillStyle = "rgba(255, 0, 0, 0.2)";
-			
+
 			var b : IList<Rectangle> = clearRects;
 			while(b.nonEmpty) {
 				var cr : Rectangle = b.head;
@@ -195,16 +194,19 @@ class Painter {
 			var other : Graphics = p.head;
 
 			// Don't test the bounds if they're the same instance.
-			if(graphics != other) {
+			if(graphics != other && !other.isDirty) {
+				// Work out if any bounds overlap.
 				var gb : Rectangle = graphics.bounds;
 				var gpb : Rectangle = graphics.previousBounds;
 				var ob : Rectangle = other.bounds;
-				//var opb : Rectangle = other.previousBounds;
+				var opb : Rectangle = other.previousBounds;
 
 				if(	gb.intersects(ob) || 
-					gpb.intersects(ob) /*||
+					gpb.intersects(ob) ||
 					gb.intersects(opb) || 
-					gpb.intersects(opb)*/) {
+					gpb.intersects(opb)) {
+
+					trace("Check : " + graphics + ", other : " + other);
 
 					other.invalidate();
 				}

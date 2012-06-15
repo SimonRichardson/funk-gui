@@ -1,8 +1,8 @@
 # Compile hss
--cmd hss -output ../../bin/js/static/css/ ../../src/main/hss/Style.hss
+#-cmd hss -output ../../bin/js/static/css/ ../../src/main/hss/Style.hss
 
 # Example 01
---next
+#--next
 -js ../../bin/js/static/js/Example01.js
 -main Main
 -cp ../../src/main/haxe
