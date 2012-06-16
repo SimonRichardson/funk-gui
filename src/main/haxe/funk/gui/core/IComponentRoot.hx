@@ -16,6 +16,8 @@ interface IComponentRoot<E> implements IComponentEventTarget {
 
 	var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
 
+	var debug(dynamic, dynamic) : Bool;
+
 	function addContainerObserver(observer : IContainerObserver) : Void;
 
 	function removeContainerObserver(observer : IContainerObserver) : Void;

@@ -28,6 +28,8 @@ class Root<E> 	implements IComponentRoot<E>,
 	public var size(get_size, never) : Int;
 	
 	public var root(get_root, never) : IComponentRoot<E>;
+
+	public var debug(get_debug, set_debug) : Bool;
 	
 	public var eventManager(default, setEventManager) : IComponentEventManager<E>;
 	
@@ -207,6 +209,15 @@ class Root<E> 	implements IComponentRoot<E>,
 			renderManager.onRenderManagerInitialize(this);
 		}
 		return renderManager;
+	}
+
+	private function get_debug() : Bool {
+		return renderManager.debug;
+	}
+
+	private function set_debug(value : Bool) : Bool {
+		renderManager.debug = value;
+		return renderManager.debug;
 	}
 
 	public function toString() : String {

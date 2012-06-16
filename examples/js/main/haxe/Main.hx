@@ -3,6 +3,7 @@ package;
 import funk.gui.button.Button;
 import funk.gui.button.ToggleButton;
 import funk.gui.Root;
+import funk.gui.core.IComponentRoot;
 import funk.gui.js.core.display.RenderManager;
 import funk.gui.js.core.event.EventManager;
 import funk.gui.js.display.ButtonView;
@@ -12,11 +13,13 @@ import js.w3c.html5.Core;
 
 class Main {
 	
+	private var _root : Root<HTMLCanvasElement>;
+
 	public function new(){
 		
-		var root = new Root<HTMLCanvasElement>();
-		root.renderManager = new RenderManager<HTMLCanvasElement>();
-		root.eventManager = new EventManager<HTMLCanvasElement>();
+		_root = new Root<HTMLCanvasElement>();
+		_root.renderManager = new RenderManager<HTMLCanvasElement>();
+		_root.eventManager = new EventManager<HTMLCanvasElement>();
 		
 		var id : Int = 0;
 		for(i in 0...50) {
@@ -25,19 +28,28 @@ class Main {
 				button.id = id;
 				button.moveTo(j * 31, i * 31);
 				button.resizeTo(30, 30);
-				root.add(button);
+				_root.add(button);
 
 				id++;
 			}
 		}
 
-		/*
-		
-		var toggle = new ToggleButton(new ToggleButtonView());
-		toggle.selected = true;
-		toggle.moveTo(80, 40);
-		toggle.resizeTo(100, 50);
-		root.add(toggle);*/
+		// This is pure dirt!
+		untyped __js__("
+			var self = this;
+			window.app = {
+				debug: function(value) {
+					return self.debug(value);
+				},
+				root: function() {
+					return self._root;
+				}
+			};");
+	}
+
+	public function debug(value : Bool) : String {
+		_root.debug = value;
+		return value ? "Welcome to app debug mode" : "Bye Bye";
 	}
 	
 	public static function main() : Void {

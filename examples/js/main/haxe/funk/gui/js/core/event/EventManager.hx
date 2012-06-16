@@ -109,7 +109,7 @@ class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
 		_document.body.removeEventListener('mouseup', handleEvent, false);
 		_document.body.removeEventListener('click', handleEvent, false);
 		_document.body.removeEventListener('keydown', handleEvent, false);
-		
+
 		_context = null;
 		
 		_root = null;

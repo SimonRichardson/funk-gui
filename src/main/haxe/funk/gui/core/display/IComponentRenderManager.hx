@@ -6,6 +6,8 @@ interface IComponentRenderManager<E> {
 	
 	var context(dynamic, never) : E;
 
+	var debug(dynamic, dynamic) : Bool;
+
 	function addRenderManagerObserver(observer : IComponentRenderManagerObserver<E>) : 
 																IComponentRenderManagerObserver<E>;
 

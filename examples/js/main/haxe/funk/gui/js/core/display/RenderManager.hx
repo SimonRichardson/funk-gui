@@ -20,6 +20,8 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 	inline public static var ELEMENT_ID : String = "gui-hx";
 	
 	public var context(get_context, never) : E;
+
+	public var debug(get_debug, set_debug) : Bool;
 	
 	private var _root : IComponentRoot<E>;
 
@@ -84,18 +86,6 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 		_painter = new Painter(_canvas2dContext, _debugCanvas2dContext, _highQuality);
 
 		resizeTo(_window.innerWidth, _window.innerHeight);
-
-		// TODO (Simon) : This needs fixing.
-		_document.onkeydown = function(event : Dynamic) : Void {
-			_painter.debug = !_painter.debug;
-			if(_painter.debug) {
-				_document.body.appendChild(_debugContext);
-			} else {
-				_document.body.removeChild(_debugContext);
-			}
-
-			resizeTo(_window.innerWidth, _window.innerHeight);
-		};
 	}
 	
 	public function onRenderManagerCleanup() : Void {
@@ -187,5 +177,21 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 	private function get_context() : E {
 		return _context;
+	}
+
+	private function get_debug() : Bool {
+		return _painter.debug;
+	}
+
+	private function set_debug(value : Bool) : Bool {
+		_painter.debug = !_painter.debug;
+		if(_painter.debug) {
+			_document.body.appendChild(_debugContext);
+		} else {
+			_document.body.removeChild(_debugContext);
+		}
+
+		resizeTo(_window.innerWidth, _window.innerHeight);
+		return _painter.debug;
 	}
 }

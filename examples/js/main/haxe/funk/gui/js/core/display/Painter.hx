@@ -37,6 +37,8 @@ class Painter {
 
 	private var _debugContext : CanvasRenderingContext2D;
 
+	private var _debugClearIteration : Int;
+
 	public function new(	context : CanvasRenderingContext2D, 
 							debugContext : CanvasRenderingContext2D,
 							highQuality : Bool) {		
@@ -197,6 +199,10 @@ class Painter {
 		if(_debug && clearRects.nonEmpty) {
 			_debugContext.save();
 			
+			if(_debugClearIteration++ % 20 == 0) {
+				_debugContext.clearRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+			}
+
 			_debugContext.fillStyle = "rgba(255, 0, 0, 0.2)";
 
 			var b : IList<Rectangle> = clearRects;
@@ -321,9 +327,10 @@ class Painter {
 		_debug = value;
 
 		if(_debug) {
-			_debugContext.fillRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+			_debugClearIteration = 0;
+			_debugContext.clearRect(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
 		}
-		
+
 		return _debug;
 	}
 }
