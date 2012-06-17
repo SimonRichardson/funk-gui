@@ -162,8 +162,8 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 			var radius : Float = ww * 0.5;
 
 			g.translate(x, y);
-			g.beginFill(color);
-			//g.beginGradientFill([0xc1c1c1, 0x1d1d1d], [1.0, 1.0], [0x00, 0xff]);
+			//g.beginFill(color);
+			g.beginGradientFill([color, 0x1d1d1d], [1.0, 1.0], [0, 1]);
 
 			//g.drawRect(xx, yy, ww, hh);
 			g.drawRoundRect(xx, yy, ww, hh, 10);

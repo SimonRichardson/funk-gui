@@ -18,7 +18,7 @@ enum GraphicsCommandType {
 
 enum GraphicsFillType {
 	SOLID(color : Int, alpha : Float);
-	GRADIENT(colors : Array<Int>, alphas : Array<Float>, ratios : Array<Int>);
+	GRADIENT(colors : Array<Int>, alphas : Array<Float>, ratios : Array<Float>);
 }
 
 enum RoundedRectRadiusType {

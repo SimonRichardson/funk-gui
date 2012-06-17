@@ -162,10 +162,8 @@ class Painter {
 								case SOLID(color, alpha):
 									_context.fillStyle = StringTools.hex(color, 6);
 								case GRADIENT(colors, alphas, ratios):
-									var gradient = _context.createLinearGradient(	_bounds.x, 
-																					_bounds.y, 
-																					_bounds.width, 
-																					_bounds.height);
+									var gHeight = graphics.bounds.height;
+									var gradient = _context.createLinearGradient(0, 0, 0, gHeight);
 									var colorTotal = colors.length;
 									for(k in 0...colorTotal) {
 										var col = StringTools.hex(colors[k], 6);

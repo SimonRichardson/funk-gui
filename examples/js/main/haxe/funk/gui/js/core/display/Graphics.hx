@@ -87,7 +87,7 @@ class Graphics {
 
 	public function beginGradientFill(	colors : Array<Int>, 
 										alphas : Array<Float>, 
-										ratios : Array<Int>) : Void {
+										ratios : Array<Float>) : Void {
 		invalidate();
 
 		_list = _list.append(new GraphicsGradientFill(colors, alphas, ratios));

@@ -10,9 +10,9 @@ class GraphicsGradientFill implements IGraphicsCommand {
 
 	public var alphas : Array<Float>;
 
-	public var ratios : Array<Int>;
+	public var ratios : Array<Float>;
 
-	public function new(colors : Array<Int>, alphas : Array<Float>, ratios : Array<Int>) {
+	public function new(colors : Array<Int>, alphas : Array<Float>, ratios : Array<Float>) {
 		this.colors = colors;
 		this.alphas = alphas;
 		this.ratios = ratios;
