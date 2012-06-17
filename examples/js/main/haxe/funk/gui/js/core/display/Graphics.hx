@@ -8,6 +8,7 @@ import funk.gui.js.core.display.commands.GraphicsBeginFill;
 import funk.gui.js.core.display.commands.GraphicsCircle;
 import funk.gui.js.core.display.commands.GraphicsClear;
 import funk.gui.js.core.display.commands.GraphicsEndFill;
+import funk.gui.js.core.display.commands.GraphicsGradientFill;
 import funk.gui.js.core.display.commands.GraphicsMoveTo;
 import funk.gui.js.core.display.commands.GraphicsLineTo;
 import funk.gui.js.core.display.commands.GraphicsRectangle;
@@ -78,10 +79,18 @@ class Graphics {
 		_list = _list.append(new GraphicsEndFill());
 	}
 
-	public function beginFill(color : Int, ?alpha : Float) : Void {
+	public function beginFill(color : Int, ?alpha : Float = 1.0) : Void {
 		invalidate();
 
 		_list = _list.append(new GraphicsBeginFill(color, alpha));
+	}
+
+	public function beginGradientFill(	colors : Array<Int>, 
+										alphas : Array<Float>, 
+										ratios : Array<Int>) : Void {
+		invalidate();
+
+		_list = _list.append(new GraphicsGradientFill(colors, alphas, ratios));
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {

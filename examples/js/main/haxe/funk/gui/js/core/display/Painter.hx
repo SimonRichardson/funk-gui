@@ -156,9 +156,23 @@ class Painter {
 					var command : IGraphicsCommand = c;
 
 					switch(command.type) {
-						case BEGIN_FILL(color, alpha): 
+						case BEGIN_FILL(type): 
 							hasFill = true;
-							_context.fillStyle = StringTools.hex(color, 6);
+							switch(type) {
+								case SOLID(color, alpha):
+									_context.fillStyle = StringTools.hex(color, 6);
+								case GRADIENT(colors, alphas, ratios):
+									var gradient = _context.createLinearGradient(	_bounds.x, 
+																					_bounds.y, 
+																					_bounds.width, 
+																					_bounds.height);
+									var colorTotal = colors.length;
+									for(k in 0...colorTotal) {
+										var col = StringTools.hex(colors[k], 6);
+										gradient.addColorStop(ratios[k], col);
+									}
+									_context.fillStyle = gradient;
+							}
 						case CIRCLE(x, y, radius):
 							if(!hasPathOpen) {
 								hasPathOpen = true;

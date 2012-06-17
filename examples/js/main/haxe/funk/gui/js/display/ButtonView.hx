@@ -163,7 +163,8 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 
 			g.translate(x, y);
 			g.beginFill(color);
-			
+			//g.beginGradientFill([0xc1c1c1, 0x1d1d1d], [1.0, 1.0], [0x00, 0xff]);
+
 			//g.drawRect(xx, yy, ww, hh);
 			g.drawRoundRect(xx, yy, ww, hh, 10);
 			//g.drawCircle(xx + radius, yy + radius, radius);

@@ -10,12 +10,12 @@ class GraphicsBeginFill implements IGraphicsCommand {
 
 	public var alpha : Float;
 
-	public function new(color : Int, alpha : Float) {
+	public function new(color : Int, ?alpha : Float = 1.0) {
 		this.color = color;
 		this.alpha = alpha;
 	}
 
 	private function get_type() : GraphicsCommandType {
-		return BEGIN_FILL(color, alpha);
+		return BEGIN_FILL(SOLID(color, alpha));
 	}
 }
