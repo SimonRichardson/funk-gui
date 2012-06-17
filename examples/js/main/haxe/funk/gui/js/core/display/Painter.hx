@@ -184,6 +184,34 @@ class Painter {
 							_context.fillRect(x, y, width, height);
 						case RESTORE:
 							_context.restore();
+						case ROUNDED_RECT(x, y, width, height, radius):
+							if(hasPathOpen) {
+								hasPathOpen = false;
+								_context.closePath();
+							}
+
+							var tl : Float, tr : Float, bl : Float, br : Float;
+							switch(radius) {
+								case ALL(r):  tl = tr = bl = br = r;
+								case EACH(tlr, trr, blr, brr):
+									tl = tlr;
+									tr = trr;
+									bl = blr;
+									br = brr;
+							}
+
+							_context.beginPath();
+							_context.moveTo(x + tl, y);
+							_context.lineTo(x + width - tr, y);
+							_context.quadraticCurveTo(x + width, y, x + width, y + tr);
+							_context.lineTo(x + width, y + height - br);
+							_context.quadraticCurveTo(x + width, y + height, x + width - br, y + height);
+							_context.lineTo(x + bl, y + height);
+							_context.quadraticCurveTo(x, y + height, x, y + height - bl);
+							_context.lineTo(x, y + tl);
+							_context.quadraticCurveTo(x, y, x + tl, y);
+							_context.closePath();
+
 						case TRANSLATE(x, y):
 							_context.translate(x, y);
 					}

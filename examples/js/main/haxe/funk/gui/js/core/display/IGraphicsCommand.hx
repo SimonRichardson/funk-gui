@@ -11,8 +11,14 @@ enum GraphicsCommandType {
 	LINE_TO(x : Float, y : Float);
 	RECT(x : Float, y : Float, width : Float, height : Float);
 	RESTORE;
+	ROUNDED_RECT(x : Float, y : Float, width : Float, height : Float, radius : RoundedRectRadiusType);
 	SAVE;
 	TRANSLATE(x : Float, y : Float);
+}
+
+enum RoundedRectRadiusType {
+	ALL(radius : Float);
+	EACH(topLeft : Float, topRight : Float, bottomLeft : Float, bottomRight : Float);
 }
 
 interface IGraphicsCommand {

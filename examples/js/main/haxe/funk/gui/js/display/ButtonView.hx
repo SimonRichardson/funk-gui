@@ -59,7 +59,7 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 		switch(type) {
 			case UPDATE_ALL_VALUES:
 			case UPDATE_ENABLED:
-			case UPDATE_HOVERED: triggerAnimation();
+			case UPDATE_HOVERED: //triggerAnimation();
 			case UPDATE_FOCUSED:
 			case UPDATE_PRESSED: 
 		}
@@ -72,11 +72,11 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 	}
 
 	public function containsPoint(point : Point) : Bool {
-		var radius : Float = width * 0.5;
-		var dx : Float = radius - (point.x - bounds.x);
-		var dy : Float = radius - (point.y - bounds.y);
-		return dx * dx + dy * dy <= radius * radius;
-		//return bounds.containsPoint(point);
+		//var radius : Float = width * 0.5;
+		//var dx : Float = radius - (point.x - bounds.x);
+		//var dy : Float = radius - (point.y - bounds.y);
+		//return dx * dx + dy * dy <= radius * radius;
+		return bounds.containsPoint(point);
 	}
 
 	var t : Float;
@@ -163,9 +163,11 @@ class ButtonView extends GraphicsComponentView, implements IButtonView {
 
 			g.translate(x, y);
 			g.beginFill(color);
-			//g.drawRect(xx, yy, ww, hh);
 			
-			g.drawCircle(xx + radius, yy + radius, radius);
+			//g.drawRect(xx, yy, ww, hh);
+			g.drawRoundRect(xx, yy, ww, hh, 10);
+			//g.drawCircle(xx + radius, yy + radius, radius);
+
 			g.endFill();
 
 			g.restore();

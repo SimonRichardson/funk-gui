@@ -12,6 +12,8 @@ import funk.gui.js.core.display.commands.GraphicsMoveTo;
 import funk.gui.js.core.display.commands.GraphicsLineTo;
 import funk.gui.js.core.display.commands.GraphicsRectangle;
 import funk.gui.js.core.display.commands.GraphicsRestore;
+import funk.gui.js.core.display.commands.GraphicsRoundedRectangle;
+import funk.gui.js.core.display.commands.GraphicsRoundedRectangleComplex;
 import funk.gui.js.core.display.commands.GraphicsSave;
 import funk.gui.js.core.display.commands.GraphicsTranslate;
 
@@ -88,6 +90,54 @@ class Graphics {
 		_list = _list.append(new GraphicsRectangle(x, y, width, height));
 
 		// Expand the drawing rect.
+		var tx : Float = _tx + x;
+		var ty : Float = _ty + y;
+
+		if(tx < _bounds.x) _bounds.x = tx;
+		if(ty < _bounds.y) _bounds.y = ty;
+		if(width > _bounds.width) _bounds.width = width;
+		if(height > _bounds.height) _bounds.height = height;
+	}
+
+	public function drawRoundRect(	x : Float, 
+									y : Float, 
+									width : Float, 
+									height : Float, 
+									radius : Float) : Void {
+		invalidate();
+
+		_list = _list.append(new GraphicsRoundedRectangle(x, y, width, height, radius));
+
+		// Expand the drawing round rect.
+		var tx : Float = _tx + x;
+		var ty : Float = _ty + y;
+
+		if(tx < _bounds.x) _bounds.x = tx;
+		if(ty < _bounds.y) _bounds.y = ty;
+		if(width > _bounds.width) _bounds.width = width;
+		if(height > _bounds.height) _bounds.height = height;
+	}
+
+	public function drawRoundRectComplex(	x : Float, 
+											y : Float, 
+											width : Float, 
+											height : Float, 
+											topLeftRadius : Float,
+											topRightRadius : Float,
+											bottomLeftRadius : Float,
+											bottomRightRadius : Float) : Void {
+		invalidate();
+
+		_list = _list.append(new GraphicsRoundedRectangleComplex(	x, 
+																	y, 
+																	width, 
+																	height, 
+																	topLeftRadius,
+																	topRightRadius,
+																	bottomLeftRadius,
+																	bottomRightRadius));
+
+		// Expand the drawing round rect.
 		var tx : Float = _tx + x;
 		var ty : Float = _ty + y;
 
