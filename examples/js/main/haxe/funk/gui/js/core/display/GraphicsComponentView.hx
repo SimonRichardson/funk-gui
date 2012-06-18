@@ -1,6 +1,9 @@
 package funk.gui.js.core.display;
 
 import funk.gui.core.ComponentView;
+import funk.option.Any;
+
+using funk.option.Any;
 
 class GraphicsComponentView extends ComponentView {
 
@@ -8,10 +11,14 @@ class GraphicsComponentView extends ComponentView {
 
 	private var _graphics : Graphics;
 
-	public function new() {
+	public function new(?graphics : Graphics = null) {
 		super();
 
-		_graphics = new Graphics();
+		if(graphics.isDefined()){
+			_graphics = graphics;	
+		} else {
+			_graphics = new Graphics();
+		}
 	}
 
 	override private function moveTo(x : Float, y : Float) : Void {

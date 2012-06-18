@@ -25,14 +25,18 @@ class LabelView extends GraphicsComponentView,
 									implements IComponentEventTargetHook {
 		
 	private var _label : Label;
+
+	private var _textRenderer : TextRenderer;
 	
-	public function new() {
-		super();
+	public function new(?graphics : Graphics = null) {
+		super(graphics);
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
 		_label = cast component;
 		_label.addCaptureHook(this);
+
+		_textRenderer = new TextRenderer();
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
@@ -52,8 +56,18 @@ class LabelView extends GraphicsComponentView,
 	public function onComponentModelUpdate(model : IComponentModel, type : Int) : Void {
 		switch(type) {
 			case ComponentModel.UPDATE_ALL_VALUES: 
+				_textRenderer.text = _label.text;
+				updateTextRenderer();
+				updatePositioning();
+				repaint();
 			case LabelModel.UPDATE_TEXT:
+				_textRenderer.text = _label.text;
+				updateTextRenderer();
+				updatePositioning();
+				repaint();
 			case LabelModel.UPDATE_ICON:
+				updatePositioning();
+				repaint();
 		}
 		repaint();
 	}
@@ -77,5 +91,16 @@ class LabelView extends GraphicsComponentView,
 	}
 	
 	private function repaint() : Void {
+		if(_label.isDefined()){
+			//
+		}
+	}
+
+	private function updateTextRenderer() : Void {
+		_textRenderer.update();
+	}
+
+	private function updatePositioning() : Void {
+		
 	}
 }

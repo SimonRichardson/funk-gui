@@ -29,10 +29,10 @@ class ButtonView extends GraphicsComponentView,
 
 	private var _label : Label;
 	
-	public function new() {
-		super();
+	public function new(?graphics : Graphics = null) {
+		super(graphics);
 
-		_label = new Label(new LabelView());
+		_label = new Label(new LabelView(graphics));
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
