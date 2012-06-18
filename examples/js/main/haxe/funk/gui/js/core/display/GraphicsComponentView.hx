@@ -8,11 +8,10 @@ class GraphicsComponentView extends ComponentView {
 
 	private var _graphics : Graphics;
 
-	public function new(id : Int) {
+	public function new() {
 		super();
 
 		_graphics = new Graphics();
-		_graphics.id = id;
 	}
 
 	override private function moveTo(x : Float, y : Float) : Void {

@@ -2,6 +2,7 @@ package funk.gui;
 
 import funk.collections.IList;
 import funk.collections.IQuadTree;
+import funk.collections.immutable.Nil;
 import funk.option.Any;
 import funk.option.Option;
 import funk.gui.core.display.IComponentRenderManager;
@@ -11,6 +12,7 @@ import funk.gui.core.events.ContainerEvent;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventManagerObserver;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.IComponentEventTargetHook;
 import funk.gui.core.events.UIEvent;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
@@ -18,8 +20,11 @@ import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
 import funk.gui.core.IContainerObserver;
 import funk.signal.Signal1;
+import funk.unit.Expect;
 
+using funk.collections.immutable.Nil;
 using funk.option.Any;
+using funk.unit.Expect;
 
 class Root<E> 	implements IComponentRoot<E>, 
 				implements IComponentEventManagerObserver<E>, 
@@ -42,12 +47,16 @@ class Root<E> 	implements IComponentRoot<E>,
 	private var _quadTree : IQuadTree<IComponent>;
 
 	private var _signal : ISignal1<ContainerEvent>;
+
+	private var _captureHooks : IList<IComponentEventTargetHook>;
 	
 	public function new() {
 		_bounds = new Rectangle(0, 0, 250, 250);
 		_quadTree = new QuadTree<IComponent>(250, 250);
 
 		_signal = new Signal1<ContainerEvent>();
+
+		_captureHooks = nil.list();
 	}
 
 	public function addContainerObserver(observer : IContainerObserver) : Void {
@@ -56,6 +65,16 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	public function removeContainerObserver(observer : IContainerObserver) : Void {
 		_signal.remove(observer.onContainerUpdate);
+	}
+
+	public function addCaptureHook(hook : IComponentEventTargetHook) : Void {
+		_captureHooks = _captureHooks.prepend(hook);
+	}
+		
+	public function removeCaptureHook(hook : IComponentEventTargetHook) : Void {
+		_captureHooks = _captureHooks.filterNot(function(h : IComponentEventTargetHook) : Bool {
+			return expect(h).toEqual(hook);
+		});
 	}
 	
 	public function add(component : IComponent) : IComponent {
@@ -125,11 +144,30 @@ class Root<E> 	implements IComponentRoot<E>,
 		return _quadTree.iterator();
 	}
 
+	public function preCaptureEventTarget(point : Point) : IComponentEventTarget {
+		if(_captureHooks.nonEmpty) {
+			var p : IList<IComponentEventTargetHook> = _captureHooks;
+			while(p.nonEmpty) {
+
+				var head : IComponentEventTargetHook = p.head;
+				var result : IComponentEventTarget = head.captureEventTarget(point);
+
+				if(result.isDefined()) {
+					return result;
+				}
+
+				p = p.tail;
+			}
+		} 
+
+		return captureEventTarget(point);
+	}
+
 	public function captureEventTarget(point : Point) : IComponentEventTarget {
 		var items : IList<IComponent> = getComponentsIntersectsPoint(point).reverse;
 		for(item in items) {
 			var component : IComponent = item;
-			var target : IComponentEventTarget = component.captureEventTarget(point);
+			var target : IComponentEventTarget = component.preCaptureEventTarget(point);
 			if(target != null) {
 				return target;
 			}
@@ -140,7 +178,8 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function onComponentRenderManagerUpdate(	manager : IComponentRenderManager<E>,
 												type : ComponentRenderManagerUpdateType) : Void {
 		switch(type) {
-			case PRE_RENDER: _quadTree.integrate();
+			case PRE_RENDER: 
+				_quadTree.integrate();
 			case POST_RENDER:
 		}
 	}

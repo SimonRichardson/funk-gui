@@ -26,8 +26,6 @@ class Graphics {
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
-	public var id : Int;
-
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
 	public var bounds(getBounds, never) : Rectangle;
@@ -220,9 +218,5 @@ class Graphics {
 
 	private function getDirty() : Bool {
 		return _dirty;
-	}
-
-	public function toString() : String {
-		return Std.format("[Graphics (id:$id)]");
 	}
 }

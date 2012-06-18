@@ -7,7 +7,6 @@ import funk.gui.core.IComponentRoot;
 import funk.gui.js.core.display.RenderManager;
 import funk.gui.js.core.event.EventManager;
 import funk.gui.js.display.ButtonView;
-import funk.gui.js.display.ToggleButtonView;
 
 import js.w3c.html5.Core;
 
@@ -21,16 +20,12 @@ class Main {
 		_root.renderManager = new RenderManager<HTMLCanvasElement>();
 		_root.eventManager = new EventManager<HTMLCanvasElement>();
 		
-		var id : Int = 0;
 		for(i in 0...50) {
 			for(j in 0...50) {
-				var button = new Button(new ButtonView(id));
-				button.id = id;
+				var button = new Button(new ButtonView());
 				button.moveTo(j * 31, i * 31);
 				button.resizeTo(30, 30);
 				_root.add(button);
-
-				id++;
 			}
 		}
 

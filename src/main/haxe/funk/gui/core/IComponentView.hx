@@ -4,10 +4,11 @@ import funk.gui.core.Component;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.ComponentState;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.IComponentEventTargetHook;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 
-interface IComponentView {
+interface IComponentView implements IComponentEventTargetHook {
 	
 	var x(dynamic, never) : Float;
 	
@@ -28,8 +29,6 @@ interface IComponentView {
 	function onComponentModelUpdate(model : IComponentModel, type : Int) : Void;
 	
 	function onComponentStateUpdate(state : ComponentState, type : ComponentStateType) : Void;
-	
+		
 	function onComponentCleanup() : Void;
-
-	function containsPoint(point : Point) : Bool;
 }

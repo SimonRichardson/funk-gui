@@ -1,5 +1,7 @@
 package funk.gui.core;
 
+import funk.collections.IList;
+import funk.collections.immutable.Nil;
 import funk.gui.core.ComponentModel;
 import funk.gui.core.ComponentState;
 import funk.gui.core.IComponentModelObserver;
@@ -7,17 +9,21 @@ import funk.gui.core.IComponentObserver;
 import funk.gui.core.IComponentView;
 import funk.gui.core.events.ComponentEvent;
 import funk.gui.core.events.IComponentEventTarget;
+import funk.gui.core.events.IComponentEventTargetHook;
 import funk.gui.core.events.UIEvent;
 import funk.gui.core.geom.Point;
 import funk.gui.core.observables.ComponentModelObserver;
 import funk.gui.core.observables.ComponentStateObserver;
 import funk.errors.AbstractMethodError;
 import funk.errors.ArgumentError;
+import funk.errors.IllegalOperationError;
 import funk.option.Any;
 import funk.signal.Signal1;
-import funk.errors.IllegalOperationError;
+import funk.unit.Expect;
 
+using funk.collections.immutable.Nil;
 using funk.option.Any;
+using funk.unit.Expect;
 
 typedef ComponentDispatchEventNamespace = {
 	
@@ -67,11 +73,15 @@ class Component implements IComponent {
 	private var _modelObserver : IComponentModelObserver;
 	
 	private var _stateObserver : IComponentStateObserver;
+
+	private var _captureHooks : IList<IComponentEventTargetHook>;
 	
 	public function new(componentView : IComponentView) {
 		_signal = new Signal1<ComponentEvent>();
 		_stateType = ComponentState;
 		
+		_captureHooks = nil.list();
+
 		initComponent(componentView);
 	}
 	
@@ -84,7 +94,17 @@ class Component implements IComponent {
 		_signal.remove(observer.onComponentEvent);
 		return observer;
 	}
-	
+
+	public function addCaptureHook(hook : IComponentEventTargetHook) : Void {
+		_captureHooks = _captureHooks.prepend(hook);
+	}
+		
+	public function removeCaptureHook(hook : IComponentEventTargetHook) : Void {
+		_captureHooks = _captureHooks.filterNot(function(h : IComponentEventTargetHook) : Bool {
+			return expect(h).toEqual(hook);
+		});
+	}
+
 	public function moveTo(x : Float, y : Float): Void {
 		if(view.isDefined()) {
 			if(view.x == x && view.y == y) {
@@ -108,13 +128,32 @@ class Component implements IComponent {
 		}
 	}
 
-	public function captureEventTarget(point : Point) : IComponentEventTarget {
+	public function preCaptureEventTarget(point : Point) : IComponentEventTarget {
 		if(view.isDefined()) {
-			if(view.containsPoint(point)) {
-				return this;
-			}
+			if(_captureHooks.nonEmpty) {
+				var p : IList<IComponentEventTargetHook> = _captureHooks;
+				while(p.nonEmpty) {
+
+					var head : IComponentEventTargetHook = p.head;
+					var result : IComponentEventTarget = head.captureEventTarget(point);
+
+					if(result.isDefined()) {
+						return result;
+					}
+
+					p = p.tail;
+				}
+			} 
+
+			return captureEventTarget(point);
 		}
 		return null;
+	}
+
+	public function captureEventTarget(point : Point) : IComponentEventTarget {
+		return if(view.isDefined()) {
+			view.captureEventTarget(point);
+		} else null;
 	}
 
 	public function processEvent(event : UIEvent) : Void {
@@ -170,17 +209,14 @@ class Component implements IComponent {
 		});
 	}
 	
-	@:final 
 	private function allowModelType(value : Class<IComponentModel>) : Void {
 		_modelType = value;
 	}
 	
-	@:final 
 	private function allowStateType(value : Class<ComponentState>) : Void {
 		_stateType = value;
 	}
 	
-	@:final 
 	private function allowViewType(value : Class<IComponentView>) : Void {
 		_viewType = value;
 	}
