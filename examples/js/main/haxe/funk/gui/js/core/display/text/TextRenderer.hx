@@ -1,8 +1,23 @@
 package funk.gui.js.core.display.text;
 
+import funk.collections.IList;
+import funk.collections.immutable.Nil;
+import funk.gui.core.geom.Rectangle;
+import funk.gui.js.core.display.Graphics;
+import funk.option.Any;
+
+using funk.collections.immutable.Nil;
+using funk.option.Any;
+
 class TextRenderer {
 
+	inline private static var MAX_WIDTH : Int = 10000;
+
+	inline private static var MAX_HEIGHT : Int = 10000;
+
 	public var text(getText, setText) : String;
+
+	public var autoSize(getAutoSize, setAutoSize) : Bool;
 
 	private var _bounds : Rectangle;
 
@@ -22,27 +37,30 @@ class TextRenderer {
 
 	private var _shortend : Bool;
 
+	private var _autoSize : Bool;
+
 	private var _autoEllipsis : Bool;
 
-	public function new() {
+	public function new(graphics : Graphics) {
 
 		_text = "";
 		_textLines = nil.list();
 
 		_textElement = new TextElement(_text);
-		_textBlock = new TextBlock(_textElement);
+		_textBlock = new TextBlock(graphics, _textElement);
 
 		_bounds = new Rectangle();	
-		_boundsMax = new Rectangle();
+		_boundsMax = new Rectangle(0, 0, MAX_WIDTH, MAX_HEIGHT);
 		_boundsMeasured = new Rectangle();
 
 		_shortend = false;
+		_autoSize = true;
 		_autoEllipsis = false;
 	}
 
 	public function update() : Void {
 		measure(_text);
-		render(_text);
+		repaint(_text);
 	}
 
 	private function measure(text : String) : Void {
@@ -53,21 +71,21 @@ class TextRenderer {
 		if(text == null || text == "") return;
 		else {
 			_textElement.text = text;
-			_textBlock.content = _textElement;
+			_textBlock.textElement = _textElement;
 
-			var textLine : TextLine = _textBlock.createTextLine(null, 10000);
+			var textLine : TextLine = _textBlock.create(null, MAX_WIDTH);
 			if(textLine.isEmpty()) return;
 			else {
 
-				_lineHeight = textLine.textHeight;
+				var lineHeight : Float = textLine.height;
 
-				var h : Float = _lineHeight + _lineSpacing;
-				while(textLine) {
+				var h : Float = lineHeight + _lineSpacing;
+				while(textLine.isDefined()) {
 					_boundsMeasured.height += h;
 					if(textLine.width > _boundsMeasured.width) {
 						_boundsMeasured.height = textLine.width;
 					}
-					textLine = _textBlock.createTextLine(textLine, 100000);
+					textLine = _textBlock.create(textLine, MAX_WIDTH);
 				}
 
 				_boundsMeasured.width = Math.ceil(_boundsMeasured.width);
@@ -76,7 +94,7 @@ class TextRenderer {
 		}
 	}
 
-	private function render(text : String) : Void {
+	private function repaint(text : String) : Void {
 		_bounds.resizeTo(0, 0);
 
 		clearTextLines();
@@ -84,20 +102,19 @@ class TextRenderer {
 		if(text == null || text == "" || _boundsMax.width < 1 || _boundsMax.height < 1) return;
 		else {
 			_textElement.text = text;
-			_textBlock.content = _textElement;
+			_textBlock.textElement = _textElement;
 
-			var textLine : TextLine = _textBlock.createTextLine(null, _boundsMax.width);
+			var textLine : TextLine = _textBlock.create(null, _boundsMax.width);
 			if(textLine.isEmpty()) return;
 			else {
-
-				var textHeight : Float = textLine.textHeight;
+				var textHeight : Float = textLine.height;
 				var textHeightAndSpacing : Float = textHeight + _lineSpacing;
 
-				var lineHeight : Float = textHeight - textLine.descent + 1;
+				var lineHeight : Float = textHeight;
 
 				var index : Int = 0;
 
-				while(textLine) {
+				while(textLine.isDefined()) {
 					if(_bounds.height + textHeight > _boundsMax.height) {
 						if(_autoEllipsis && !_shortend) {
 							_shortend = true;
@@ -109,44 +126,45 @@ class TextRenderer {
 						_shortend = true;
 						break;
 					}
+
+					index += textLine.charCount;
+
+					_bounds.height += textHeightAndSpacing;
+
+					if(_bounds.width < textLine.width) {
+						_bounds.width = textLine.width;
+					}
+
+					_textLines = _textLines.append(textLine);
+
+					textLine = _textBlock.create(textLine, _boundsMax.width);
 				}
 
-				index += textLine.charCount;
+				_bounds.height -= _lineSpacing;
 
-				_bounds.height += textHeightAndSpacing;
+				for(line in _textLines) {
+					// TODO (Simon) : Alignment
+					var textLine : TextLine = line;
+					textLine.y += lineHeight;
 
-				if(_bounds.width < textLine.width) {
-					_bounds.width = textLine.width;
+					lineHeight += textHeightAndSpacing;
 				}
 
-				_textLines = _textLines.append(textLine);
-
-				textLine = _textBlock.createTextLine(textLine, _boundsMax.width);
+				_shortend = false;
 			}
-
-			_bounds.height -= _lineSpacing;
-
-			for(line in _textLines) {
-				// TODO (Simon) : Alignment
-
-				line.y += lineHeight;
-				lineHeight += textHeightAndSpacing;
-			}
-
-			_shortend = false;
 		}
 	}
 
 	private function clearTextLines() : Void {
 		_textLines = nil.list();
-		_textBlock.releaseAllLines();
+		_textBlock.removeAll();
 	}
 
 	private function applyEllipsis(index : Int) : Void {
 		if(index > 3)
-			render(_text.substr(0, index - 3) + "...");
+			repaint(_text.substr(0, index - 3) + "...");
 		else 
-			render("...");
+			repaint("...");
 	}
 
 	private function getText() : String {
@@ -157,8 +175,25 @@ class TextRenderer {
 		if(_text != value) {
 			_text = value;
 
-			measure(_text);
-			render(_text);
+			update();
 		}
+		return _text;
+	}
+
+	private function getAutoSize() : Bool {
+		return _autoSize;
+	}
+
+	private function setAutoSize(value : Bool) : Bool {
+		if(_autoSize != value) {
+			_autoSize = value;
+			if(_autoSize) {
+
+				_boundsMax.width = MAX_WIDTH;
+				_boundsMax.height = MAX_HEIGHT;
+			}
+			update();
+		}
+		return _autoSize;
 	}
 }

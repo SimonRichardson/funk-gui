@@ -2,11 +2,13 @@ package funk.gui.js.core.display;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
+import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.IGraphicsCommand;
 import funk.gui.js.core.display.commands.GraphicsBeginFill;
 import funk.gui.js.core.display.commands.GraphicsCircle;
 import funk.gui.js.core.display.commands.GraphicsClear;
+import funk.gui.js.core.display.commands.GraphicsCreateText;
 import funk.gui.js.core.display.commands.GraphicsEndFill;
 import funk.gui.js.core.display.commands.GraphicsGradientFill;
 import funk.gui.js.core.display.commands.GraphicsMoveTo;
@@ -18,6 +20,8 @@ import funk.gui.js.core.display.commands.GraphicsRoundedRectangleComplex;
 import funk.gui.js.core.display.commands.GraphicsSave;
 import funk.gui.js.core.display.commands.GraphicsTranslate;
 
+import js.w3c.html5.Canvas2DContext;
+
 using funk.collections.immutable.Nil;
 
 class Graphics {
@@ -25,6 +29,8 @@ class Graphics {
 	inline private static var DEFAULT_MIN_VALUE : Float = 0.0;
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
+
+	public var context(never, setContext) : CanvasRenderingContext2D;
 
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
@@ -45,6 +51,8 @@ class Graphics {
 	private var _previousBounds : Rectangle;
 
 	private var _dirty : Bool;
+
+	private var _context : CanvasRenderingContext2D;
 
 	public function new(){
 		_dirty = false;
@@ -89,6 +97,12 @@ class Graphics {
 		invalidate();
 
 		_list = _list.append(new GraphicsGradientFill(colors, alphas, ratios));
+	}
+
+	public function createText(text : String, x : Float, y : Float) : Void {
+		invalidate();
+
+		_list = _list.append(new GraphicsCreateText(text, new Point(x, y)));
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {
@@ -214,6 +228,11 @@ class Graphics {
 
 	private function getPreviousBounds() : Rectangle {
 		return _previousBounds;
+	}
+
+	private function setContext(value : CanvasRenderingContext2D) : CanvasRenderingContext2D {
+		_context = value;
+		return value;
 	}
 
 	private function getDirty() : Bool {

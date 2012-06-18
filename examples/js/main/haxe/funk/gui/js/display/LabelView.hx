@@ -15,6 +15,7 @@ import funk.gui.js.core.event.Events;
 
 import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.GraphicsComponentView;
+import funk.gui.js.core.display.text.TextRenderer;
 
 import js.Lib;
 
@@ -36,7 +37,7 @@ class LabelView extends GraphicsComponentView,
 		_label = cast component;
 		_label.addCaptureHook(this);
 
-		_textRenderer = new TextRenderer();
+		_textRenderer = new TextRenderer(graphics);
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
@@ -92,7 +93,7 @@ class LabelView extends GraphicsComponentView,
 	
 	private function repaint() : Void {
 		if(_label.isDefined()){
-			//
+			
 		}
 	}
 

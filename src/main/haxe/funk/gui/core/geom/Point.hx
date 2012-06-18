@@ -27,4 +27,8 @@ class Point {
 			y *= norm;
 		}
 	}
+
+	public function toString() : String {
+		return "{x: " + x + ", y: " + y + "}";
+	}
 }

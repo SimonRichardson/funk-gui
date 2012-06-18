@@ -1,11 +1,13 @@
 package funk.gui.js.core.display;
 
+import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 
 enum GraphicsCommandType {
 	BEGIN_FILL(type : GraphicsFillType);
 	CIRCLE(x : Float, y : Float, radius : Float);
 	CLEAR(bounds : Rectangle);
+	CREATE_TEXT(text : String, point : Point);
 	END_FILL;
 	MOVE_TO(x : Float, y : Float);
 	LINE_TO(x : Float, y : Float);
