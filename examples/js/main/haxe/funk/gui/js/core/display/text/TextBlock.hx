@@ -26,10 +26,58 @@ class TextBlock {
 	}
 
 	public function create(previousTextLine : TextLine, width : Float) : TextLine {
-		if(previousTextLine.isEmpty()) {
-			return new TextLine(_graphics, previousTextLine);
+		var p : Int = if(previousTextLine.isEmpty()) {
+			0;
+		} else {
+			var s : Int = 0;
+			var pTextLine : TextLine = previousTextLine;
+			while(pTextLine.isDefined()){
+				s += pTextLine.metrics.size;
+				pTextLine = pTextLine.parent;
+			}
+			s;
 		}
-		return null;
+
+		var fullText : String = _textElement.text;
+
+		if(p == fullText.length || fullText.length == 0) {
+			return null;
+		}
+
+		var text : String = fullText.substr(p);
+
+		var textLine : TextLine = new TextLine(_graphics, previousTextLine);
+		textLine.text = text;
+		textLine.measure();
+
+		if(textLine.metrics.width > width) {
+			var parts : Array<String> = text.split(" ");
+
+			var part : String = "";
+			var previousText : String = "";
+
+			do {
+				textLine.text = part;
+				textLine.measure();
+
+				if(textLine.metrics.width > width) {
+					// Back off and re-measure.
+					textLine.text = previousText;
+					textLine.measure();
+					break;
+				}
+
+				previousText = part;
+
+				var t : String = parts.shift();
+				part += t + (parts.length > 0 ? " " : "");
+
+			} while(parts.length > 0);
+		}
+
+		_textLines = _textLines.append(textLine);
+
+		return textLine;		
 	}
 
 	public function removeAll() : Void {

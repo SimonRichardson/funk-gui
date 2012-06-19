@@ -4,6 +4,8 @@ import funk.option.Any;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.Graphics;
 
+import js.w3c.html5.Canvas2DContext;
+
 using funk.option.Any;
 
 class TextLine {
@@ -17,35 +19,55 @@ class TextLine {
 	public var width(getWidth, never) : Float;
 
 	public var height(getHeight, never) : Float;
-	
-	public var charCount(getCharCount, never) : Int;
 
+	public var text(getText, setText) : String;
+
+	public var metrics(getMetrics, never) : TextLineMetrics;
+	
 	private var _parent : TextLine;
 
 	private var _bounds : Rectangle;
 
 	private var _metrics : TextLineMetrics;
 
+	private var _text : String;
+
 	private var _graphics : Graphics;
 
 	public function new(graphics : Graphics, parent : TextLine) {
 		_graphics = graphics;
 		_parent = parent;
-		_bounds = new Rectangle(0, 0, 40, 40);
+
+		_text = "";
+
+		_bounds = new Rectangle(0, 0, 40, 14);
 		_metrics = new TextLineMetrics();
+	}
+
+	public function render() : Void {
+		measure();
+		repaint();
+	}
+
+	public function measure() : Void {
+		if(_graphics.isDefined()){
+			_metrics.width = switch(_graphics.measureText(_text)) {
+				case Some(tm): tm.width;
+				case None: 0;
+			}
+		} else {
+			_metrics.width = 0;
+		}
 	}
 
 	private function repaint() : Void {
 		if(_graphics.isDefined()) {
 			var g : Graphics = _graphics;
 
-			trace("REPAINT");
-
-			g.clear();
 			g.save();
 			
 			g.beginFill(0xffffff);
-			g.createText("FUCK YOU!", _bounds.x, _bounds.y);
+			g.createText(_text, _bounds.x, _bounds.y);
 			g.endFill();
 
 			g.restore();
@@ -63,7 +85,6 @@ class TextLine {
 	public function setX(value : Float) : Float {
 		if(_bounds.x != value){
 			_bounds.x = value;
-			repaint();
 		}
 		return _bounds.x;
 	}
@@ -75,7 +96,6 @@ class TextLine {
 	public function setY(value : Float) : Float {
 		if(_bounds.y != value) {
 			_bounds.y = value;
-			repaint();
 		}
 		return _bounds.y;
 	}
@@ -88,7 +108,19 @@ class TextLine {
 		return _bounds.height;
 	}
 
-	private function getCharCount() : Int {
-		return _metrics.size;
+	private function getText() : String {
+		return _text;
+	}
+
+	private function setText(value : String) : String {
+		if(_text != value) {
+			_text = value;
+			_metrics.size = _text.length;
+		}
+		return _text;
+	}
+
+	private function getMetrics() : TextLineMetrics {
+		return _metrics;
 	}
 }

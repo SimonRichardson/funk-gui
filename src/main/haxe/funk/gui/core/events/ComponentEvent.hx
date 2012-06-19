@@ -1,6 +1,6 @@
 package funk.gui.core.events;
 
-import funk.gui.core.Component;
+import funk.gui.core.IComponent;
 import funk.option.Option;
 
 using funk.option.Option;

@@ -11,9 +11,9 @@ using funk.option.Any;
 
 class TextRenderer {
 
-	inline private static var MAX_WIDTH : Int = 10000;
+	inline private static var AUTOSIZE_WIDTH : Int = 600;
 
-	inline private static var MAX_HEIGHT : Int = 10000;
+	inline private static var AUTOSIZE_HEIGHT : Int = 10000;
 
 	public var text(getText, setText) : String;
 
@@ -50,7 +50,7 @@ class TextRenderer {
 		_textBlock = new TextBlock(graphics, _textElement);
 
 		_bounds = new Rectangle();	
-		_boundsMax = new Rectangle(0, 0, MAX_WIDTH, MAX_HEIGHT);
+		_boundsMax = new Rectangle(0, 0, AUTOSIZE_WIDTH, AUTOSIZE_HEIGHT);
 		_boundsMeasured = new Rectangle();
 
 		_shortend = false;
@@ -58,8 +58,8 @@ class TextRenderer {
 		_autoEllipsis = false;
 	}
 
-	public function update() : Void {
-		measure(_text);
+	public function render() : Void {
+		//measure(_text);
 		repaint(_text);
 	}
 
@@ -73,7 +73,7 @@ class TextRenderer {
 			_textElement.text = text;
 			_textBlock.textElement = _textElement;
 
-			var textLine : TextLine = _textBlock.create(null, MAX_WIDTH);
+			var textLine : TextLine = _textBlock.create(null, _boundsMax.width);
 			if(textLine.isEmpty()) return;
 			else {
 
@@ -85,7 +85,7 @@ class TextRenderer {
 					if(textLine.width > _boundsMeasured.width) {
 						_boundsMeasured.height = textLine.width;
 					}
-					textLine = _textBlock.create(textLine, MAX_WIDTH);
+					textLine = _textBlock.create(textLine, _boundsMax.width);
 				}
 
 				_boundsMeasured.width = Math.ceil(_boundsMeasured.width);
@@ -126,8 +126,8 @@ class TextRenderer {
 						_shortend = true;
 						break;
 					}
-
-					index += textLine.charCount;
+					
+					index += textLine.metrics.size;
 
 					_bounds.height += textHeightAndSpacing;
 
@@ -139,13 +139,14 @@ class TextRenderer {
 
 					textLine = _textBlock.create(textLine, _boundsMax.width);
 				}
-
+				
 				_bounds.height -= _lineSpacing;
 
 				for(line in _textLines) {
 					// TODO (Simon) : Alignment
 					var textLine : TextLine = line;
 					textLine.y += lineHeight;
+					textLine.render();
 
 					lineHeight += textHeightAndSpacing;
 				}
@@ -175,7 +176,7 @@ class TextRenderer {
 		if(_text != value) {
 			_text = value;
 
-			update();
+			render();
 		}
 		return _text;
 	}
@@ -189,10 +190,10 @@ class TextRenderer {
 			_autoSize = value;
 			if(_autoSize) {
 
-				_boundsMax.width = MAX_WIDTH;
-				_boundsMax.height = MAX_HEIGHT;
+				_boundsMax.width = AUTOSIZE_WIDTH;
+				_boundsMax.height = AUTOSIZE_HEIGHT;
 			}
-			update();
+			render();
 		}
 		return _autoSize;
 	}

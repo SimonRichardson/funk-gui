@@ -60,16 +60,14 @@ class LabelView extends GraphicsComponentView,
 				_textRenderer.text = _label.text;
 				updateTextRenderer();
 				updatePositioning();
-				repaint();
 			case LabelModel.UPDATE_TEXT:
 				_textRenderer.text = _label.text;
 				updateTextRenderer();
 				updatePositioning();
-				repaint();
 			case LabelModel.UPDATE_ICON:
 				updatePositioning();
-				repaint();
 		}
+		
 		repaint();
 	}
 	
@@ -98,7 +96,7 @@ class LabelView extends GraphicsComponentView,
 	}
 
 	private function updateTextRenderer() : Void {
-		_textRenderer.update();
+		_textRenderer.render();
 	}
 
 	private function updatePositioning() : Void {

@@ -140,6 +140,12 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 		switch(event.type) {
 			case ContainerEventType.COMPONENT_ADDED:
 				_rootModified = true;
+
+				var component : IComponent = event.component;
+				if(Std.is(component.view, GraphicsComponentView)) {
+					var view : GraphicsComponentView = cast component.view;
+					view.graphics.context = _canvas2dContext;
+				}
 		}
 	}
 	

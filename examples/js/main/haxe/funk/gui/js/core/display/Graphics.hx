@@ -19,10 +19,13 @@ import funk.gui.js.core.display.commands.GraphicsRoundedRectangle;
 import funk.gui.js.core.display.commands.GraphicsRoundedRectangleComplex;
 import funk.gui.js.core.display.commands.GraphicsSave;
 import funk.gui.js.core.display.commands.GraphicsTranslate;
+import funk.option.Any;
+import funk.option.Option;
 
 import js.w3c.html5.Canvas2DContext;
 
 using funk.collections.immutable.Nil;
+using funk.option.Any;
 
 class Graphics {
 
@@ -58,6 +61,8 @@ class Graphics {
 		_dirty = false;
 		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 		_previousBounds = new Rectangle();
+
+		_list = nil.list();
 	}
 
 	public function clear() : Void {
@@ -206,6 +211,16 @@ class Graphics {
 
 		if(x < _bounds.x) _bounds.x = x;
 		if(y < _bounds.y) _bounds.y = y;
+	}
+
+	public function measureText(text : String) : Option<TextMetrics> {
+		// TODO (Simon) pass the font
+		return if(_context.isDefined()){
+			_context.font = "14px sans-serif";
+			Some(_context.measureText(text));
+		} else {
+			None;
+		}
 	}
 
 	public function invalidate() : Void {

@@ -58,8 +58,6 @@ class Painter {
 	public function add(graphics : Graphics, rect : Rectangle) : Void {
 		if(rect.width <= 0 || rect.height <= 0) return;
 
-		graphics.context = _context;
-
 		_list = _list.append(graphics);
 	}
 
@@ -183,7 +181,7 @@ class Painter {
 							hasFill = false;
 							hasPathOpen = false;
 						case CREATE_TEXT(text, point):
-							_context.font = "10px sans-serif";
+							_context.font = "14px sans-serif";
 							_context.fillText(text, point.x, point.y);
 						case END_FILL:
 							if(hasPathOpen) {

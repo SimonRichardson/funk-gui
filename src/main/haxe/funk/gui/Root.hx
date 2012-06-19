@@ -80,7 +80,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function add(component : IComponent) : IComponent {
 		_quadTree = _quadTree.add(component);
 
-		notify(ContainerEventType.COMPONENT_ADDED);
+		notify(ContainerEventType.COMPONENT_ADDED, component);
 
 		return component;
 	}
@@ -88,7 +88,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function addAt(component : IComponent, index : Int) : IComponent {
 		_quadTree = _quadTree.addAt(component, index);
 
-		notify(ContainerEventType.COMPONENT_ADDED);
+		notify(ContainerEventType.COMPONENT_ADDED, component);
 
 		return component;
 	}
@@ -201,8 +201,8 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	}
 
-	public function notify(type : ContainerEventType) : Void {
-		_signal.dispatch(new ContainerEvent(type));
+	public function notify(type : ContainerEventType, component : IComponent) : Void {
+		_signal.dispatch(new ContainerEvent(type, component));
 	}
 	
 	private function get_size() : Int {
