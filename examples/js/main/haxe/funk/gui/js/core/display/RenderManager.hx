@@ -144,6 +144,8 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 				var component : IComponent = event.component;
 				if(Std.is(component.view, GraphicsComponentView)) {
 					var view : GraphicsComponentView = cast component.view;
+					
+					// Push the context on to the graphics when we add it.
 					view.graphics.context = _canvas2dContext;
 				}
 		}
@@ -162,7 +164,7 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 			for(component in _root) {
 				if(Std.is(component.view, GraphicsComponentView)) {
 					var view : GraphicsComponentView = cast component.view;
-					_painter.add(view.graphics, view.bounds);
+					_painter.addAll(view.graphicsList);
 				}
 			}
 

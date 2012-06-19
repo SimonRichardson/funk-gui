@@ -24,11 +24,11 @@ class Main {
 		
 		var label = new Label(new LabelView());
 		_root.add(label);
-		
 		label.moveTo(10, 10);
 		label.resizeTo(400, 400);
 		label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
-
+		
+		
 
 		/*
 		for(i in 0...50) {

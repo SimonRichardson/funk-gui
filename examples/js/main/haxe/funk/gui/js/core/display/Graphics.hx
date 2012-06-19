@@ -33,7 +33,7 @@ class Graphics {
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
-	public var context(never, setContext) : CanvasRenderingContext2D;
+	public var context(getContext, setContext) : CanvasRenderingContext2D;
 
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
@@ -104,10 +104,22 @@ class Graphics {
 		_list = _list.append(new GraphicsGradientFill(colors, alphas, ratios));
 	}
 
-	public function createText(text : String, x : Float, y : Float) : Void {
+	public function createText(text : String, rect : Rectangle) : Void {
 		invalidate();
 
-		_list = _list.append(new GraphicsCreateText(text, new Point(x, y)));
+		_list = _list.append(new GraphicsCreateText(text, new Point(rect.x, rect.y)));
+
+		var width : Float = rect.width;
+		var height : Float = rect.height;
+
+		// Expand the drawing rect.
+		var tx : Float = _tx + rect.x;
+		var ty : Float = _ty + rect.y;
+
+		if(tx < _bounds.x) _bounds.x = tx;
+		if(ty < _bounds.y) _bounds.y = ty;
+		if(width > _bounds.width) _bounds.width = width;
+		if(height > _bounds.height) _bounds.height = height;
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {
@@ -243,6 +255,10 @@ class Graphics {
 
 	private function getPreviousBounds() : Rectangle {
 		return _previousBounds;
+	}
+
+	private function getContext() : CanvasRenderingContext2D {
+		return _context;
 	}
 
 	private function setContext(value : CanvasRenderingContext2D) : CanvasRenderingContext2D {

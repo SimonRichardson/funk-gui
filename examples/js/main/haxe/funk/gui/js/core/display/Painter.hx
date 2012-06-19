@@ -55,10 +55,12 @@ class Painter {
 		_mergeIntersections = true;
 	}
 
-	public function add(graphics : Graphics, rect : Rectangle) : Void {
-		if(rect.width <= 0 || rect.height <= 0) return;
-
+	public function add(graphics : Graphics) : Void {
 		_list = _list.append(graphics);
+	}
+
+	public function addAll(graphics : IList<Graphics>) : Void {
+		_list = _list.appendAll(graphics);
 	}
 
 	public function removeAll() : Void {

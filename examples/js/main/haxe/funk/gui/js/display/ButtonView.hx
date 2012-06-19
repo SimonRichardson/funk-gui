@@ -29,15 +29,18 @@ class ButtonView extends GraphicsComponentView,
 
 	private var _label : Label;
 	
-	public function new(?graphics : Graphics = null) {
-		super(graphics);
-
-		_label = new Label(new LabelView(graphics));
+	public function new() {
+		super();
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
 		_button = cast component;
 		_button.addCaptureHook(this);
+
+		var labelView : LabelView = new LabelView();
+		_label = new Label(labelView);
+
+		addView(labelView);
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {

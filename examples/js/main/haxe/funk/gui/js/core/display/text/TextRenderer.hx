@@ -11,13 +11,19 @@ using funk.option.Any;
 
 class TextRenderer {
 
-	inline private static var AUTOSIZE_WIDTH : Int = 600;
+	inline private static var AUTOSIZE_WIDTH : Int = 400;
 
 	inline private static var AUTOSIZE_HEIGHT : Int = 10000;
 
 	public var text(getText, setText) : String;
 
 	public var autoSize(getAutoSize, setAutoSize) : Bool;
+
+	public var width(getWidth, setWidth) : Float;
+
+	public var height(getHeight, setHeight) : Float;
+
+	private var _graphics : Graphics;
 
 	private var _bounds : Rectangle;
 
@@ -43,6 +49,8 @@ class TextRenderer {
 
 	public function new(graphics : Graphics) {
 
+		_graphics = graphics;
+
 		_text = "";
 		_textLines = nil.list();
 
@@ -55,11 +63,11 @@ class TextRenderer {
 
 		_shortend = false;
 		_autoSize = true;
-		_autoEllipsis = false;
+		_autoEllipsis = true;
 	}
 
 	public function render() : Void {
-		//measure(_text);
+		measure(_text);
 		repaint(_text);
 	}
 
@@ -142,6 +150,9 @@ class TextRenderer {
 				
 				_bounds.height -= _lineSpacing;
 
+				// Clear the graphics
+				_graphics.clear();
+
 				for(line in _textLines) {
 					// TODO (Simon) : Alignment
 					var textLine : TextLine = line;
@@ -162,6 +173,7 @@ class TextRenderer {
 	}
 
 	private function applyEllipsis(index : Int) : Void {
+		trace(index);
 		if(index > 3)
 			repaint(_text.substr(0, index - 3) + "...");
 		else 
@@ -196,5 +208,29 @@ class TextRenderer {
 			render();
 		}
 		return _autoSize;
+	}
+
+	private function getWidth() : Float {
+		return _bounds.width;
+	}
+
+	private function setWidth(value : Float) : Float {
+		if(_autoSize) {
+			_boundsMax.width = value;
+			render();
+		}
+		return _bounds.width;
+	}
+
+	private function getHeight() : Float {
+		return _bounds.height;
+	}
+
+	private function setHeight(value : Float) : Float {
+		if(_autoSize) {
+			_boundsMax.height = value;
+			render();
+		}
+		return _bounds.height;
 	}
 }

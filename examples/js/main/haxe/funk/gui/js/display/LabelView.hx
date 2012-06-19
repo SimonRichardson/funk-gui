@@ -29,8 +29,8 @@ class LabelView extends GraphicsComponentView,
 
 	private var _textRenderer : TextRenderer;
 	
-	public function new(?graphics : Graphics = null) {
-		super(graphics);
+	public function new() {
+		super();
 	}
 	
 	public function onComponentInitialize(component : IComponent) : Void {
@@ -48,6 +48,11 @@ class LabelView extends GraphicsComponentView,
 	public function onComponentResize(width : Float, height : Float) : Void {
 		resizeTo(width, height);
 		
+		if(!_textRenderer.autoSize) {
+			_textRenderer.width = width;
+			_textRenderer.height = height;
+		}
+
 		width -= (_padding.left + _padding.right);
 		height -= (_padding.top + _padding.bottom);
 		

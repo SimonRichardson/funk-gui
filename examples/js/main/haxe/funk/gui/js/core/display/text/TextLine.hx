@@ -40,7 +40,7 @@ class TextLine {
 
 		_text = "";
 
-		_bounds = new Rectangle(0, 0, 40, 14);
+		_bounds = new Rectangle(0, 0, 0, 14);
 		_metrics = new TextLineMetrics();
 	}
 
@@ -58,6 +58,8 @@ class TextLine {
 		} else {
 			_metrics.width = 0;
 		}
+
+		_bounds.width = _metrics.width;
 	}
 
 	private function repaint() : Void {
@@ -67,7 +69,7 @@ class TextLine {
 			g.save();
 			
 			g.beginFill(0xffffff);
-			g.createText(_text, _bounds.x, _bounds.y);
+			g.createText(_text, _bounds);
 			g.endFill();
 
 			g.restore();
