@@ -50,7 +50,7 @@ class Component implements IComponent {
 	
 	public var enabled(get_enabled, set_enabled) : Bool;
 	
-	public var eventParent(get_eventParent, never) : IComponentEventTarget;
+	public var eventParent(get_eventParent, set_eventParent) : IComponentEventTarget;
 
 	private var event(get_event, set_event) : ComponentEvent;
 	
@@ -368,7 +368,11 @@ class Component implements IComponent {
 	}
 
 	private function get_eventParent() : IComponentEventTarget {
-		return model.parent;
+		return model.eventParent;
+	}
+
+	private function set_eventParent(value : IComponentEventTarget) : IComponentEventTarget {
+		return model.eventParent = value;
 	}
 
 	public function toString() : String {

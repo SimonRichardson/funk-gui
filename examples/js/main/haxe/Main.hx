@@ -28,8 +28,8 @@ class Main {
 		
 		var label = new Label(new LabelView());
 		label.moveTo(10, 10);
-		label.resizeTo(400, 14);
-		label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
+		label.resizeTo(400, 100);
+		label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
 
 		_root.add(label);
 

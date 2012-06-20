@@ -1,8 +1,8 @@
 package funk.gui.core;
 
-import funk.gui.core.Component;
+import funk.option.Option;
 
-interface IContainer implements IComponent {
+interface IContainer {
 	
 	var size(dynamic, never) : Int;
 		
@@ -12,7 +12,7 @@ interface IContainer implements IComponent {
 
 	function remove(component : IComponent) : IComponent;
 
-	function removeAt(index : Int) : IComponent;
+	function removeAt(index : Int) : Option<IComponent>;
 
 	function getAt(index : Int) : IComponent;
 

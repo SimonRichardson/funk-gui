@@ -4,6 +4,7 @@ import funk.gui.core.IContainer;
 import funk.gui.core.IComponentModel;
 import funk.gui.core.IComponentModelObserver;
 import funk.gui.core.IComponentObserver;
+import funk.gui.core.events.IComponentEventTarget;
 import funk.signal.Signal2;
 
 typedef ComponentModelNamespace = {
@@ -17,6 +18,8 @@ class ComponentModel implements IComponentModel {
 	public var id(get_id, set_id) : Int;
 	
 	public var parent(get_parent, set_parent) : IContainer;
+
+	public var eventParent(get_eventParent, set_eventParent) : IComponentEventTarget;
 	
 	public var editMode(get_editMode, set_editMode) : Bool;
 	
@@ -25,6 +28,8 @@ class ComponentModel implements IComponentModel {
 	private var _id : Int;
 	
 	private var _parent : IContainer;
+
+	private var _eventParent : IComponentEventTarget;
 	
 	private var _editMode : Bool;
 	
@@ -75,6 +80,15 @@ class ComponentModel implements IComponentModel {
 			}
 		}
 		return _parent;
+	}
+
+	private function get_eventParent() : IComponentEventTarget {
+		return _eventParent;
+	}
+	
+	private function set_eventParent(value : IComponentEventTarget) : IComponentEventTarget {
+		_eventParent = value;
+		return _eventParent;
 	}
 	
 	private function get_editMode() : Bool {

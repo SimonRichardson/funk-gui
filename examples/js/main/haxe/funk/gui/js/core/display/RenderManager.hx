@@ -158,8 +158,6 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 					var view : GraphicsComponentView = cast component.view;
 					_painter.addAll(view.graphicsList);
 				}
-				
-				//component.parent = _root;
 			}
 
 			_rootModified = false;

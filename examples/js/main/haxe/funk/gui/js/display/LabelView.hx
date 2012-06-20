@@ -38,25 +38,25 @@ class LabelView extends GraphicsComponentView,
 		_label.addCaptureHook(this);
 
 		_textRenderer = new TextRenderer(graphics);
-		_textRenderer.autoSize = true;
+		_textRenderer.autoSize = false;
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
 		moveTo(x, y);
+
+		_textRenderer.moveTo(x, y);
+
 		repaint();
 	}
 	
 	public function onComponentResize(width : Float, height : Float) : Void {
 		resizeTo(width, height);
 		
-		if(!_textRenderer.autoSize) {
-			_textRenderer.width = width;
-			_textRenderer.height = height;
-		}
-
 		width -= (_padding.left + _padding.right);
 		height -= (_padding.top + _padding.bottom);
 		
+		_textRenderer.resizeTo(width, height);
+
 		repaint();
 	}
 	
@@ -97,12 +97,12 @@ class LabelView extends GraphicsComponentView,
 	
 	private function repaint() : Void {
 		if(_label.isDefined()){
-			
+			_textRenderer.render();	
 		}
 	}
 
 	private function updateTextRenderer() : Void {
-		_textRenderer.render();
+		
 	}
 
 	private function updatePositioning() : Void {

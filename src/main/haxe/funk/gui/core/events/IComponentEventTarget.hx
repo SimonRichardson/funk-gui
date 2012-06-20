@@ -5,7 +5,7 @@ import funk.gui.core.events.UIEvent;
 
 interface IComponentEventTarget {
 
-	var eventParent(dynamic, never) : IComponentEventTarget;
+	var eventParent(dynamic, dynamic) : IComponentEventTarget;
 
 	function addCaptureHook(hook : IComponentEventTargetHook) : Void;
 

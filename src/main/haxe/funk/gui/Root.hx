@@ -40,7 +40,7 @@ class Root<E> 	implements IComponentRoot<E>,
 	
 	public var renderManager(default, setRenderManager) : IComponentRenderManager<E>;
 
-	public var eventParent(get_eventParent, never) : IComponentEventTarget;
+	public var eventParent(get_eventParent, set_eventParent) : IComponentEventTarget;
 	
 	private var _bounds : Rectangle;
 
@@ -80,6 +80,9 @@ class Root<E> 	implements IComponentRoot<E>,
 	public function add(component : IComponent) : IComponent {
 		_quadTree = _quadTree.add(component);
 
+		component.parent = this;
+		component.eventParent = this;
+
 		notify(ContainerEventType.COMPONENT_ADDED, component);
 
 		return component;
@@ -87,6 +90,9 @@ class Root<E> 	implements IComponentRoot<E>,
 
 	public function addAt(component : IComponent, index : Int) : IComponent {
 		_quadTree = _quadTree.addAt(component, index);
+
+		component.parent = this;
+		component.eventParent = this;
 
 		notify(ContainerEventType.COMPONENT_ADDED, component);
 
@@ -214,6 +220,10 @@ class Root<E> 	implements IComponentRoot<E>,
 	}
 
 	private function get_eventParent() : IComponentEventTarget {
+		return null;
+	}
+
+	private function set_eventParent(value : IComponentEventTarget) : IComponentEventTarget {
 		return null;
 	}
 	

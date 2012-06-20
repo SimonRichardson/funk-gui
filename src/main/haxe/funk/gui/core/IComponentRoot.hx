@@ -4,11 +4,12 @@ import funk.collections.IList;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.core.IComponent;
+import funk.gui.core.IContainer;
 import funk.gui.core.display.IComponentRenderManager;
 import funk.gui.core.events.IComponentEventManager;
 import funk.gui.core.events.IComponentEventTarget;
 
-interface IComponentRoot<E> implements IComponentEventTarget {
+interface IComponentRoot<E> implements IContainer, implements IComponentEventTarget {
 
 	var root(dynamic, never) : IComponentRoot<E>;
 

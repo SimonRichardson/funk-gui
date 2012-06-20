@@ -19,6 +19,10 @@ class TextRenderer {
 
 	public var autoSize(getAutoSize, setAutoSize) : Bool;
 
+	public var x(getX, setX) : Float;
+
+	public var y(getY, setY) : Float;
+
 	public var width(getWidth, setWidth) : Float;
 
 	public var height(getHeight, setHeight) : Float;
@@ -64,6 +68,23 @@ class TextRenderer {
 		_shortend = false;
 		_autoSize = true;
 		_autoEllipsis = true;
+	}
+
+	public function moveTo(x : Float, y : Float) : Void {
+		if(_bounds.x != x || _bounds.y != y) {
+			_bounds.x = x;
+			_bounds.y = y;
+			render();
+		}
+	}
+
+	public function resizeTo(width : Float, height : Float) : Void {
+		if(!_autoSize && (_boundsMax.width != width || _boundsMax.height != height)) {
+			_boundsMax.width = width;
+			_boundsMax.height = height;
+
+			render();
+		}
 	}
 
 	public function render() : Void {
@@ -118,7 +139,7 @@ class TextRenderer {
 				var textHeight : Float = textLine.height;
 				var textHeightAndSpacing : Float = textHeight + _lineSpacing;
 
-				var lineHeight : Float = textHeight;
+				var lineHeight : Float = _bounds.y + textHeight;
 
 				var index : Int = 0;
 
@@ -156,6 +177,7 @@ class TextRenderer {
 				for(line in _textLines) {
 					// TODO (Simon) : Alignment
 					var textLine : TextLine = line;
+					textLine.x = _bounds.x;
 					textLine.y += lineHeight;
 					textLine.render();
 
@@ -173,7 +195,6 @@ class TextRenderer {
 	}
 
 	private function applyEllipsis(index : Int) : Void {
-		trace(index);
 		if(index > 3)
 			repaint(_text.substr(0, index - 3) + "...");
 		else 
@@ -200,14 +221,39 @@ class TextRenderer {
 	private function setAutoSize(value : Bool) : Bool {
 		if(_autoSize != value) {
 			_autoSize = value;
-			if(_autoSize) {
 
+			if(_autoSize) {
 				_boundsMax.width = AUTOSIZE_WIDTH;
 				_boundsMax.height = AUTOSIZE_HEIGHT;
 			}
+
 			render();
 		}
 		return _autoSize;
+	}
+
+	private function getX() : Float {
+		return _bounds.x;
+	}
+
+	private function setX(value : Float) : Float {
+		if(_bounds.x != value) {
+			_bounds.x = value;
+			render();
+		}
+		return _bounds.x;
+	}
+
+	private function getY() : Float {
+		return _bounds.y;
+	}
+
+	private function setY(value : Float) : Float {
+		if(_bounds.y != value) {
+			_bounds.y = value;
+			render();
+		}
+		return _bounds.y;
 	}
 
 	private function getWidth() : Float {
