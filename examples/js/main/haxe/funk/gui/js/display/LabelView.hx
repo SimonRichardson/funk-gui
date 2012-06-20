@@ -44,7 +44,7 @@ class LabelView extends GraphicsComponentView,
 	public function onComponentMove(x : Float, y : Float) : Void {
 		moveTo(x, y);
 
-		_textRenderer.moveTo(x, y);
+		_textRenderer.moveTo(x + _padding.left, y + _padding.top);
 
 		repaint();
 	}

@@ -59,6 +59,9 @@ class Graphics {
 		_previousBounds = new Rectangle();
 
 		_list = nil.list();
+
+		_tx = 0;
+		_ty = 0;
 	}
 
 	public function clear() : Void {

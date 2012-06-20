@@ -74,6 +74,7 @@ class TextRenderer {
 		if(_bounds.x != x || _bounds.y != y) {
 			_bounds.x = x;
 			_bounds.y = y;
+
 			render();
 		}
 	}
@@ -173,6 +174,7 @@ class TextRenderer {
 
 				// Clear the graphics
 				_graphics.clear();
+				_graphics.save();
 
 				for(line in _textLines) {
 					// TODO (Simon) : Alignment
@@ -183,6 +185,8 @@ class TextRenderer {
 
 					lineHeight += textHeightAndSpacing;
 				}
+
+				_graphics.restore();
 
 				_shortend = false;
 			}

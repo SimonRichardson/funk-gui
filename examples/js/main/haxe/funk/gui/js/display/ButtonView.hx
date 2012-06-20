@@ -37,24 +37,25 @@ class ButtonView extends GraphicsComponentView,
 		_button = cast component;
 		_button.addCaptureHook(this);
 
+		_padding.left = 5;
+		_padding.top = 0;
+		_padding.bottom = 10;
+
 		var labelView : LabelView = new LabelView();
 		_label = new Label(labelView);
-
 		addView(labelView);
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
 		moveTo(x, y);
 
-		_label.moveTo(_padding.left, _padding.top);
+		_label.moveTo(x + _padding.left, y + _padding.top);
 
 		repaint();
 	}
 	
 	public function onComponentResize(width : Float, height : Float) : Void {
 		resizeTo(width, height);
-		
-		_label.moveTo(_padding.left, _padding.top);
 
 		width -= (_padding.left + _padding.right);
 		height -= (_padding.top + _padding.bottom);

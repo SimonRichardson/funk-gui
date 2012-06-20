@@ -25,25 +25,22 @@ class Main {
 		_root = new Root<HTMLCanvasElement>();
 		_root.renderManager = new RenderManager<HTMLCanvasElement>();
 		_root.eventManager = new EventManager<HTMLCanvasElement>();
-		
-		var label = new Label(new LabelView());
-		label.moveTo(10, 10);
-		label.resizeTo(400, 100);
-		label.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean vitae rhoncus sem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.";
 
-		_root.add(label);
+		var size : Int = 40;
 
-		/*
-		for(i in 0...50) {
-			for(j in 0...50) {
+		var c = 0;
+		for(i in 0...40) {
+			for(j in 0...40) {
 				var button = new Button(new ButtonView());
-				button.moveTo(j * 31, i * 31);
-				button.resizeTo(30, 30);
+				button.moveTo(j * (size + 1), i * (size + 1));
+				button.resizeTo(size, size);
+				button.text = Std.string(c++);
 				_root.add(button);
 			}
 		}
-		*/
 
+		debug(true);
+		
 		// This is pure dirt!
 		untyped __js__("
 			var self = this;

@@ -66,13 +66,9 @@ class TextLine {
 		if(_graphics.isDefined()) {
 			var g : Graphics = _graphics;
 
-			g.save();
-			
 			g.beginFill(0xffffff);
 			g.createText(_text, _bounds);
 			g.endFill();
-
-			g.restore();
 		}
 	}
 

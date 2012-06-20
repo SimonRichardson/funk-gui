@@ -69,8 +69,7 @@ class TextBlock {
 
 				previousText = part;
 
-				var t : String = parts.shift();
-				part += t + (parts.length > 0 ? " " : "");
+				part += parts.shift() + (parts.length > 0 ? " " : "");
 
 			} while(parts.length > 0);
 		}

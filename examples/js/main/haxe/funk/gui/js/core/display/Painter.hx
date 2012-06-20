@@ -67,7 +67,7 @@ class Painter {
 		if(_staticSpanElement.isEmpty()){
 			var document : HTMLDocument = CommonJS.getHtmlDocument();
 			_staticSpanElement = CommonJS.newElement("span", document);
-			_staticSpanElement.style.display = "absolute";
+			_staticSpanElement.style.position = "absolute";
 			document.body.appendChild(_staticSpanElement);
 		}
 	}
@@ -292,6 +292,7 @@ class Painter {
 			var b : IList<Rectangle> = clearRects;
 			while(b.nonEmpty) {
 				var cr : Rectangle = b.head;
+
 				_debugContext.fillRect(cr.x, cr.y, cr.width, cr.height);
 				b = b.tail;
 			}
