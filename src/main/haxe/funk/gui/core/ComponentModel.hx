@@ -67,7 +67,14 @@ class ComponentModel implements IComponentModel {
 	}
 	
 	private function set_parent(value : IContainer) : IContainer {
-		return _parent = value;
+		if(_parent != value){
+			_parent = value;
+			if(_editMode) _dirty = true;
+			else {
+				notify(UPDATE_ALL_VALUES);
+			}
+		}
+		return _parent;
 	}
 	
 	private function get_editMode() : Bool {

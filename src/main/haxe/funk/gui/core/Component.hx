@@ -157,9 +157,11 @@ class Component implements IComponent {
 	}
 
 	public function processEvent(event : UIEvent) : Void {
-		if(!enabled) return;
-		else {
+		if(!enabled) {
+			return;
+		} else {
 			switch(event.type) {
+				case ADDED(parent): model.parent = parent;
 				case FOCUS_OUT: focused = false;
 				case FOCUS_IN(focusOut, focusIn): focused = focusIn == this;
 				case MOUSE_IN(position): hovered = true;
@@ -167,6 +169,7 @@ class Component implements IComponent {
 				case MOUSE_MOVE(position, downPosition): 
 				case MOUSE_UP(position): pressed = false;
 				case MOUSE_OUT(position): hovered = false;
+				case REMOVED: model.parent = null;
 				default:
 			}
 		}

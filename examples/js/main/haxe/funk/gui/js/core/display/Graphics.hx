@@ -33,8 +33,6 @@ class Graphics {
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
-	public var context(getContext, setContext) : CanvasRenderingContext2D;
-
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
 	public var bounds(getBounds, never) : Rectangle;
@@ -54,8 +52,6 @@ class Graphics {
 	private var _previousBounds : Rectangle;
 
 	private var _dirty : Bool;
-
-	private var _context : CanvasRenderingContext2D;
 
 	public function new(){
 		_dirty = false;
@@ -225,16 +221,6 @@ class Graphics {
 		if(y < _bounds.y) _bounds.y = y;
 	}
 
-	public function measureText(text : String) : Option<TextMetrics> {
-		// TODO (Simon) pass the font
-		return if(_context.isDefined()){
-			_context.font = "14px sans-serif";
-			Some(_context.measureText(text));
-		} else {
-			None;
-		}
-	}
-
 	public function invalidate() : Void {
 		_dirty = true;
 	}
@@ -255,15 +241,6 @@ class Graphics {
 
 	private function getPreviousBounds() : Rectangle {
 		return _previousBounds;
-	}
-
-	private function getContext() : CanvasRenderingContext2D {
-		return _context;
-	}
-
-	private function setContext(value : CanvasRenderingContext2D) : CanvasRenderingContext2D {
-		_context = value;
-		return value;
 	}
 
 	private function getDirty() : Bool {

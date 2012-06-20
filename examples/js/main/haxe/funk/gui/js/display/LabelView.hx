@@ -38,6 +38,7 @@ class LabelView extends GraphicsComponentView,
 		_label.addCaptureHook(this);
 
 		_textRenderer = new TextRenderer(graphics);
+		_textRenderer.autoSize = true;
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {

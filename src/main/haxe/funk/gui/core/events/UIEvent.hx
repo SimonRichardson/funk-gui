@@ -1,17 +1,20 @@
 package funk.gui.core.events;
 
+import funk.gui.core.IContainer;
 import funk.gui.core.events.IComponentEventTarget;
 import funk.gui.core.geom.Point;
 
 enum UIEventType {
+	ADDED(parent : IContainer);
 	FOCUS_OUT;
 	FOCUS_IN(focusOut : IComponentEventTarget, focusIn : IComponentEventTarget);
+	KEY_DOWN(keyCode : Int, ctrlKey : Bool, shiftKey : Bool, altKey : Bool);
 	MOUSE_IN(position : Point);
 	MOUSE_DOWN(position : Point);
 	MOUSE_MOVE(position : Point, downPosition : Point);
 	MOUSE_UP(position : Point);
 	MOUSE_OUT(position : Point);
-	KEY_DOWN(keyCode : Int, ctrlKey : Bool, shiftKey : Bool, altKey : Bool);
+	REMOVED;
 }
 
 class UIEvent {

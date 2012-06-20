@@ -11,9 +11,9 @@ using funk.option.Any;
 
 class TextRenderer {
 
-	inline private static var AUTOSIZE_WIDTH : Int = 400;
+	inline private static var AUTOSIZE_WIDTH : Int = 99999;
 
-	inline private static var AUTOSIZE_HEIGHT : Int = 10000;
+	inline private static var AUTOSIZE_HEIGHT : Int = 99999;
 
 	public var text(getText, setText) : String;
 

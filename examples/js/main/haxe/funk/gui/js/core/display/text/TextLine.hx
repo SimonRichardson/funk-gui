@@ -3,10 +3,12 @@ package funk.gui.js.core.display.text;
 import funk.option.Any;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.Graphics;
+import funk.gui.js.core.display.Painter;
 
 import js.w3c.html5.Canvas2DContext;
 
 using funk.option.Any;
+using funk.gui.js.core.display.Painter;
 
 class TextLine {
 
@@ -40,7 +42,7 @@ class TextLine {
 
 		_text = "";
 
-		_bounds = new Rectangle(0, 0, 0, 14);
+		_bounds = new Rectangle(0, 0, 0, 0);
 		_metrics = new TextLineMetrics();
 	}
 
@@ -51,15 +53,13 @@ class TextLine {
 
 	public function measure() : Void {
 		if(_graphics.isDefined()){
-			_metrics.width = switch(_graphics.measureText(_text)) {
-				case Some(tm): tm.width;
-				case None: 0;
-			}
+			_text.measureText(_metrics);
 		} else {
-			_metrics.width = 0;
+			_metrics.reset();
 		}
 
 		_bounds.width = _metrics.width;
+		_bounds.height = _metrics.height;
 	}
 
 	private function repaint() : Void {

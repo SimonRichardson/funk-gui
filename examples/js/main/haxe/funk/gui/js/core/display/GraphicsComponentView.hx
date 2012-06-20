@@ -31,9 +31,6 @@ class GraphicsComponentView extends ComponentView {
 			var gView : GraphicsComponentView = cast view;
 			var gViewGraphics : Graphics = gView.graphics;
 
-			// Push the context on to graphics for text measuring.
-			gViewGraphics.context = _graphics.context;
-			
 			_graphicsList = _graphicsList.append(gView.graphics);
 		}
 	}

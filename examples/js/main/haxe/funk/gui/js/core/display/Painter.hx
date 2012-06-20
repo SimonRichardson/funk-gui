@@ -5,6 +5,7 @@ import funk.collections.immutable.Nil;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.IGraphicsCommand;
+import funk.gui.js.core.display.text.TextLineMetrics;
 import funk.option.Any;
 
 import js.w3c.html5.Canvas2DContext;
@@ -20,6 +21,12 @@ class Painter {
 	public var size(getSize, never) : Int;
 
 	public var debug(getDebug, setDebug) : Bool;
+
+	private static var _staticContext : CanvasRenderingContext2D;
+
+	private static var _staticSpanElement : HTMLSpanElement;
+
+	private static var _staticTextHeights : Hash<Int> = new Hash<Int>();
 
 	private var _context : CanvasRenderingContext2D;
 
@@ -53,6 +60,38 @@ class Painter {
 
 		_overdraw = false;
 		_mergeIntersections = true;
+
+		// We need to keep a reference of this for easy quick measuring of text.
+		_staticContext = _context;
+
+		if(_staticSpanElement.isEmpty()){
+			var document : HTMLDocument = CommonJS.getHtmlDocument();
+			_staticSpanElement = CommonJS.newElement("span", document);
+			_staticSpanElement.style.display = "absolute";
+			document.body.appendChild(_staticSpanElement);
+		}
+	}
+
+	public static function measureText(text : String, metrics : TextLineMetrics) : Void {
+		if(_staticContext.isDefined()) {
+			// TODO : Passing the font description
+			_staticContext.font = "14px sans-serif";
+			var nativeMetrics : TextMetrics = _staticContext.measureText(text);
+			metrics.width = nativeMetrics.width;
+		}
+
+		// TODO : Pass in the font details
+		var cssFont : String = "14px sans-serif";
+		if(_staticTextHeights.exists(cssFont)) {
+			metrics.height = _staticTextHeights.get(cssFont);
+		} else if(_staticSpanElement.isDefined()) {
+			_staticSpanElement.font = cssFont;
+			_staticSpanElement.textContent = text;
+
+			metrics.height = _staticSpanElement.offsetHeight;
+
+			_staticSpanElement.textContent = "";
+		}
 	}
 
 	public function add(graphics : Graphics) : Void {
