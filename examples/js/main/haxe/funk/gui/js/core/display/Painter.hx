@@ -5,6 +5,7 @@ import funk.collections.immutable.Nil;
 import funk.gui.core.geom.Rectangle;
 import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.IGraphicsCommand;
+import funk.gui.js.core.display.text.TextFormat;
 import funk.gui.js.core.display.text.TextLineMetrics;
 import funk.option.Any;
 
@@ -26,7 +27,7 @@ class Painter {
 
 	private static var _staticSpanElement : HTMLSpanElement;
 
-	private static var _staticTextHeights : Hash<Int> = new Hash<Int>();
+	private static var _staticTextHeights : Hash<Float> = new Hash<Float>();
 
 	private var _context : CanvasRenderingContext2D;
 
@@ -72,25 +73,29 @@ class Painter {
 		}
 	}
 
-	public static function measureText(text : String, metrics : TextLineMetrics) : Void {
+	public static function measureText(	text : String, 
+										metrics : TextLineMetrics, 
+										format : TextFormat) : Void {
+		var f : String = format.toString();
+
 		if(_staticContext.isDefined()) {
-			// TODO : Passing the font description
-			_staticContext.font = "14px sans-serif";
+			_staticContext.font = f;
 			var nativeMetrics : TextMetrics = _staticContext.measureText(text);
 			metrics.width = nativeMetrics.width;
 		}
 
-		// TODO : Pass in the font details
-		var cssFont : String = "14px sans-serif";
-		if(_staticTextHeights.exists(cssFont)) {
-			metrics.height = _staticTextHeights.get(cssFont);
+		if(_staticTextHeights.exists(f)) {
+			metrics.height = _staticTextHeights.get(f);
 		} else if(_staticSpanElement.isDefined()) {
-			_staticSpanElement.font = cssFont;
+			_staticSpanElement.style.font = f;
 			_staticSpanElement.textContent = text;
 
-			metrics.height = _staticSpanElement.offsetHeight;
-
+			var offsetHeight : Float = _staticSpanElement.offsetHeight;
+			
 			_staticSpanElement.textContent = "";
+
+			metrics.height = offsetHeight;
+			_staticTextHeights.set(f, offsetHeight);
 		}
 	}
 
@@ -221,8 +226,8 @@ class Painter {
 						case CLEAR(bounds):
 							hasFill = false;
 							hasPathOpen = false;
-						case CREATE_TEXT(text, point):
-							_context.font = "14px sans-serif";
+						case CREATE_TEXT(text, font, point):
+							_context.font = font;
 							_context.fillText(text, point.x, point.y);
 						case END_FILL:
 							if(hasPathOpen) {

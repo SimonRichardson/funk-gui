@@ -27,6 +27,10 @@ class TextRenderer {
 
 	public var height(getHeight, setHeight) : Float;
 
+	public var textFormat(getTextFormat, setTextFormat) : TextFormat;
+
+	public var lineSpacing(getLineSpacing, never) : Float;
+
 	private var _graphics : Graphics;
 
 	private var _bounds : Rectangle;
@@ -36,8 +40,6 @@ class TextRenderer {
 	private var _boundsMeasured : Rectangle;
 
 	private var _textLines : IList<TextLine>;
-
-	private var _lineSpacing : Int;
 
 	private var _text : String;
 
@@ -50,6 +52,8 @@ class TextRenderer {
 	private var _autoSize : Bool;
 
 	private var _autoEllipsis : Bool;
+
+	private var _textFormat : TextFormat;
 
 	public function new(graphics : Graphics) {
 
@@ -68,6 +72,8 @@ class TextRenderer {
 		_shortend = false;
 		_autoSize = true;
 		_autoEllipsis = true;
+
+		_textFormat = new TextFormat();
 	}
 
 	public function moveTo(x : Float, y : Float) : Void {
@@ -101,6 +107,8 @@ class TextRenderer {
 		if(text == null || text == "") return;
 		else {
 			_textElement.text = text;
+			_textElement.textFormat = _textFormat;
+
 			_textBlock.textElement = _textElement;
 
 			var textLine : TextLine = _textBlock.create(null, _boundsMax.width);
@@ -109,7 +117,7 @@ class TextRenderer {
 
 				var lineHeight : Float = textLine.height;
 
-				var h : Float = lineHeight + _lineSpacing;
+				var h : Float = lineHeight + lineSpacing;
 				while(textLine.isDefined()) {
 					_boundsMeasured.height += h;
 					if(textLine.width > _boundsMeasured.width) {
@@ -119,7 +127,7 @@ class TextRenderer {
 				}
 
 				_boundsMeasured.width = Math.ceil(_boundsMeasured.width);
-				_boundsMeasured.height = Math.ceil(_boundsMeasured.height - _lineSpacing);
+				_boundsMeasured.height = Math.ceil(_boundsMeasured.height - lineSpacing);
 			}
 		}
 	}
@@ -132,13 +140,15 @@ class TextRenderer {
 		if(text == null || text == "" || _boundsMax.width < 1 || _boundsMax.height < 1) return;
 		else {
 			_textElement.text = text;
+			_textElement.textFormat = _textFormat;
+
 			_textBlock.textElement = _textElement;
 
 			var textLine : TextLine = _textBlock.create(null, _boundsMax.width);
 			if(textLine.isEmpty()) return;
 			else {
 				var textHeight : Float = textLine.height;
-				var textHeightAndSpacing : Float = textHeight + _lineSpacing;
+				var textHeightAndSpacing : Float = textHeight + lineSpacing;
 
 				var lineHeight : Float = _bounds.y + textHeight;
 
@@ -170,7 +180,7 @@ class TextRenderer {
 					textLine = _textBlock.create(textLine, _boundsMax.width);
 				}
 				
-				_bounds.height -= _lineSpacing;
+				_bounds.height -= lineSpacing;
 
 				// Clear the graphics
 				_graphics.clear();
@@ -282,5 +292,19 @@ class TextRenderer {
 			render();
 		}
 		return _bounds.height;
+	}
+
+	private function getTextFormat() : TextFormat {
+		return _textFormat;
+	}
+
+	private function setTextFormat(value : TextFormat) : TextFormat {
+		_textFormat = value;
+		render();
+		return _textFormat;
+	}
+
+	private function getLineSpacing() : Float {
+		return _textFormat.lineSpacing;
 	}
 }

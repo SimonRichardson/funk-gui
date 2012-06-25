@@ -46,7 +46,7 @@ class TextBlock {
 
 		var text : String = fullText.substr(p);
 
-		var textLine : TextLine = new TextLine(_graphics, previousTextLine);
+		var textLine : TextLine = new TextLine(_graphics, _textElement.textFormat, previousTextLine);
 		textLine.text = text;
 		textLine.measure();
 

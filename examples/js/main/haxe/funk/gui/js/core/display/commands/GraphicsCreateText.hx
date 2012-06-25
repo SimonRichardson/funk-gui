@@ -9,14 +9,17 @@ class GraphicsCreateText implements IGraphicsCommand {
 
 	public var text : String;
 
+	public var font : String;
+
 	public var point : Point;
 
-	public function new(text : String, point : Point) {
+	public function new(text : String, font : String, point : Point) {
 		this.text = text;
+		this.font = font;
 		this.point = point;
 	}
 
 	private function get_type() : GraphicsCommandType {
-		return CREATE_TEXT(text, point);
+		return CREATE_TEXT(text, font, point);
 	}
 }

@@ -103,10 +103,10 @@ class Graphics {
 		_list = _list.append(new GraphicsGradientFill(colors, alphas, ratios));
 	}
 
-	public function createText(text : String, rect : Rectangle) : Void {
+	public function createText(text : String, font : String, rect : Rectangle) : Void {
 		invalidate();
 
-		_list = _list.append(new GraphicsCreateText(text, new Point(rect.x, rect.y)));
+		_list = _list.append(new GraphicsCreateText(text, font, new Point(rect.x, rect.y)));
 
 		var width : Float = rect.width;
 		var height : Float = rect.height;

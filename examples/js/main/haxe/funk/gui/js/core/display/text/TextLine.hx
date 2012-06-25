@@ -36,8 +36,11 @@ class TextLine {
 
 	private var _graphics : Graphics;
 
-	public function new(graphics : Graphics, parent : TextLine) {
+	private var _textFormat : TextFormat;
+
+	public function new(graphics : Graphics, textFormat : TextFormat, parent : TextLine) {
 		_graphics = graphics;
+		_textFormat = textFormat;
 		_parent = parent;
 
 		_text = "";
@@ -52,8 +55,8 @@ class TextLine {
 	}
 
 	public function measure() : Void {
-		if(_graphics.isDefined()){
-			_text.measureText(_metrics);
+		if(_graphics.isDefined() && _textFormat.isDefined()){
+			_text.measureText(_metrics, _textFormat);
 		} else {
 			_metrics.reset();
 		}
@@ -66,8 +69,8 @@ class TextLine {
 		if(_graphics.isDefined()) {
 			var g : Graphics = _graphics;
 
-			g.beginFill(0xffffff);
-			g.createText(_text, _bounds);
+			g.beginFill(_textFormat.fontColor);
+			g.createText(_text, _textFormat.toString(), _bounds);
 			g.endFill();
 		}
 	}

@@ -37,7 +37,7 @@ class ButtonView extends GraphicsComponentView,
 		_button = cast component;
 		_button.addCaptureHook(this);
 
-		_padding.left = 5;
+		_padding.left = 0;
 		_padding.top = 0;
 		_padding.bottom = 10;
 
