@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.components;
+package funk.gui.js.dom.components;
 
 import funk.gui.button.Button;
 import funk.gui.button.ButtonModel;
@@ -13,8 +13,8 @@ import funk.gui.core.geom.Point;
 import funk.gui.text.Label;
 import funk.option.Any;
 
+import funk.gui.js.dom.display.GraphicsComponentView;
 import funk.gui.js.core.display.Graphics;
-import funk.gui.js.core.display.GraphicsComponentView;
 
 import js.Lib;
 
@@ -25,8 +25,6 @@ class ButtonView extends GraphicsComponentView,
 								implements IComponentEventTargetHook {
 		
 	private var _button : Button;
-
-	private var _label : Label;
 	
 	public function new() {
 		super();
@@ -35,20 +33,10 @@ class ButtonView extends GraphicsComponentView,
 	public function onComponentInitialize(component : IComponent) : Void {
 		_button = cast component;
 		_button.addCaptureHook(this);
-
-		_padding.left = 0;
-		_padding.top = 0;
-		_padding.bottom = 10;
-
-		var labelView : LabelView = new LabelView();
-		_label = new Label(labelView);
-		addView(labelView);
 	}
 	
 	public function onComponentMove(x : Float, y : Float) : Void {
 		moveTo(x, y);
-
-		_label.moveTo(x + _padding.left, y + _padding.top);
 
 		repaint();
 	}
@@ -59,18 +47,14 @@ class ButtonView extends GraphicsComponentView,
 		width -= (_padding.left + _padding.right);
 		height -= (_padding.top + _padding.bottom);
 		
-		_label.resizeTo(width, height);
-
 		repaint();
 	}
 	
 	public function onComponentModelUpdate(model : IComponentModel, type : Int) : Void {
 		switch(type) {
-			case ComponentModel.UPDATE_ALL_VALUES: 
-				_label.text = _button.text;
+			case ComponentModel.UPDATE_ALL_VALUES:
 				repaint();
 			case ButtonModel.UPDATE_TEXT:
-				_label.text = _button.text;
 			case ButtonModel.UPDATE_ICON:
 				repaint();
 		}
@@ -80,7 +64,6 @@ class ButtonView extends GraphicsComponentView,
 		switch(type) {
 			case UPDATE_ALL_VALUES:
 			case UPDATE_ENABLED:
-				_label.enabled = state.enabled;
 			case UPDATE_HOVERED:
 			case UPDATE_FOCUSED:
 			case UPDATE_PRESSED: 
@@ -121,7 +104,8 @@ class ButtonView extends GraphicsComponentView,
 
 			g.translate(x, y);
 			g.beginFill(color);
-			g.drawRect(0, 0, width, height);
+			//g.drawRect(0, 0, width, height);
+			g.drawCircle(0, 0, width);
 			g.endFill();
 
 			g.restore();

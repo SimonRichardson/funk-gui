@@ -7,24 +7,24 @@ import funk.gui.button.ToggleButton;
 import funk.gui.text.Label;
 import funk.gui.Root;
 import funk.gui.core.IComponentRoot;
-import funk.gui.js.canvas.display.RenderManager;
-import funk.gui.js.canvas.event.EventManager;
-import funk.gui.js.canvas.components.ButtonView;
-import funk.gui.js.canvas.components.LabelView;
+import funk.gui.js.core.event.EventManager;
 
 import js.w3c.html5.Core;
+
+import funk.gui.js.dom.components.ButtonView;
+import funk.gui.js.dom.display.RenderManager;
 
 using funk.collections.immutable.ListUtil;
 
 class Main {
 	
-	private var _root : Root<HTMLCanvasElement>;
+	private var _root : Root<HTMLElement>;
 
 	public function new(){
 		
-		_root = new Root<HTMLCanvasElement>();
-		_root.renderManager = new RenderManager<HTMLCanvasElement>();
-		_root.eventManager = new EventManager<HTMLCanvasElement>();
+		_root = new Root<HTMLElement>();
+		_root.renderManager = new RenderManager<HTMLElement>();
+		_root.eventManager = new EventManager<HTMLElement>();
 
 		var size : Int = 40;
 

@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.display;
+package funk.gui.js.core.display;
 
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;

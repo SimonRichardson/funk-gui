@@ -1,24 +1,27 @@
-package funk.gui.js.canvas.display;
+package funk.gui.js.core.display;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
 import funk.gui.core.geom.Point;
 import funk.gui.core.geom.Rectangle;
-import funk.gui.js.canvas.display.IGraphicsCommand;
-import funk.gui.js.canvas.display.commands.GraphicsBeginFill;
-import funk.gui.js.canvas.display.commands.GraphicsCircle;
-import funk.gui.js.canvas.display.commands.GraphicsClear;
-import funk.gui.js.canvas.display.commands.GraphicsCreateText;
-import funk.gui.js.canvas.display.commands.GraphicsEndFill;
-import funk.gui.js.canvas.display.commands.GraphicsGradientFill;
-import funk.gui.js.canvas.display.commands.GraphicsMoveTo;
-import funk.gui.js.canvas.display.commands.GraphicsLineTo;
-import funk.gui.js.canvas.display.commands.GraphicsRectangle;
-import funk.gui.js.canvas.display.commands.GraphicsRestore;
-import funk.gui.js.canvas.display.commands.GraphicsRoundedRectangle;
-import funk.gui.js.canvas.display.commands.GraphicsRoundedRectangleComplex;
-import funk.gui.js.canvas.display.commands.GraphicsSave;
-import funk.gui.js.canvas.display.commands.GraphicsTranslate;
+
+import funk.gui.js.core.display.IGraphicsCommand;
+import funk.gui.js.core.display.IGraphicsView;
+import funk.gui.js.core.display.commands.GraphicsBeginFill;
+import funk.gui.js.core.display.commands.GraphicsCircle;
+import funk.gui.js.core.display.commands.GraphicsClear;
+import funk.gui.js.core.display.commands.GraphicsCreateText;
+import funk.gui.js.core.display.commands.GraphicsEndFill;
+import funk.gui.js.core.display.commands.GraphicsGradientFill;
+import funk.gui.js.core.display.commands.GraphicsMoveTo;
+import funk.gui.js.core.display.commands.GraphicsLineTo;
+import funk.gui.js.core.display.commands.GraphicsRectangle;
+import funk.gui.js.core.display.commands.GraphicsRestore;
+import funk.gui.js.core.display.commands.GraphicsRoundedRectangle;
+import funk.gui.js.core.display.commands.GraphicsRoundedRectangleComplex;
+import funk.gui.js.core.display.commands.GraphicsSave;
+import funk.gui.js.core.display.commands.GraphicsTranslate;
+
 import funk.option.Any;
 import funk.option.Option;
 
@@ -33,6 +36,8 @@ class Graphics {
 
 	inline private static var DEFAULT_MAX_VALUE : Float = 999999999.0;
 
+	public var view(getGraphicsView, never) : IGraphicsView;
+
 	public var commands(getCommands, never) : IList<IGraphicsCommand>;
 
 	public var bounds(getBounds, never) : Rectangle;
@@ -40,6 +45,8 @@ class Graphics {
 	public var previousBounds(getPreviousBounds, never) : Rectangle;
 
 	public var isDirty(getDirty, never) : Bool;
+
+	private var _view : IGraphicsView;
 
 	private var _list : IList<IGraphicsCommand>;
 
@@ -53,7 +60,9 @@ class Graphics {
 
 	private var _dirty : Bool;
 
-	public function new(){
+	public function new(view : IGraphicsView){
+		_view = view;
+
 		_dirty = false;
 		_bounds = new Rectangle(DEFAULT_MAX_VALUE, DEFAULT_MAX_VALUE, DEFAULT_MIN_VALUE, DEFAULT_MIN_VALUE);
 		_previousBounds = new Rectangle();
@@ -234,6 +243,10 @@ class Graphics {
 		_dirty = false;
 
 		_previousBounds.setValues(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+	}
+
+	private function getGraphicsView() : IGraphicsView {
+		return _view;
 	}
 
 	private function getCommands() : IList<IGraphicsCommand> {

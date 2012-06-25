@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.event;
+package funk.gui.js.core.event;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
@@ -19,7 +19,7 @@ import js.w3c.level3.Events;
 using funk.collections.immutable.Nil;
 using funk.option.Any;
 
-class EventManager<E : HTMLCanvasElement> implements IComponentEventManager<E> {
+class EventManager<E> implements IComponentEventManager<E> {
 	
 	public var focus(get_focus, set_focus) : IComponentEventTarget;
 

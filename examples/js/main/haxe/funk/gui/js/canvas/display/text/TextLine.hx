@@ -2,8 +2,8 @@ package funk.gui.js.canvas.display.text;
 
 import funk.option.Any;
 import funk.gui.core.geom.Rectangle;
-import funk.gui.js.canvas.display.Graphics;
 import funk.gui.js.canvas.display.Painter;
+import funk.gui.js.core.display.Graphics;
 
 import js.w3c.html5.Canvas2DContext;
 

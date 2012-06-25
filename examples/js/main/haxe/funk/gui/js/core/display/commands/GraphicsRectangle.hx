@@ -1,6 +1,6 @@
-package funk.gui.js.canvas.display.commands;
+package funk.gui.js.core.display.commands;
 
-import funk.gui.js.canvas.display.IGraphicsCommand;
+import funk.gui.js.core.display.IGraphicsCommand;
 
 class GraphicsRectangle implements IGraphicsCommand {
 

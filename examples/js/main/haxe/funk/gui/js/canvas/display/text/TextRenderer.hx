@@ -3,7 +3,7 @@ package funk.gui.js.canvas.display.text;
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
 import funk.gui.core.geom.Rectangle;
-import funk.gui.js.canvas.display.Graphics;
+import funk.gui.js.core.display.Graphics;
 import funk.option.Any;
 
 using funk.collections.immutable.Nil;

@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.event;
+package funk.gui.js.core.event;
 
 import funk.gui.core.events.IEvent;
 import funk.gui.core.events.AbstractEvent;

@@ -11,10 +11,8 @@ import funk.gui.text.Label;
 import funk.gui.text.LabelModel;
 import funk.gui.text.ILabelView;
 import funk.option.Any;
-import funk.gui.js.canvas.event.Events;
 
-import funk.gui.js.canvas.display.Graphics;
-import funk.gui.js.canvas.display.GraphicsComponentView;
+import funk.gui.js.core.display.GraphicsComponentView;
 import funk.gui.js.canvas.display.text.TextFormat;
 import funk.gui.js.canvas.display.text.TextRenderer;
 

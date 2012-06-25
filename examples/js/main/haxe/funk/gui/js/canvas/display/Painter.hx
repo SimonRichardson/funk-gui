@@ -2,12 +2,13 @@ package funk.gui.js.canvas.display;
 
 import funk.collections.IList;
 import funk.collections.immutable.Nil;
+import funk.option.Any;
+
 import funk.gui.core.geom.Rectangle;
-import funk.gui.js.canvas.display.Graphics;
-import funk.gui.js.canvas.display.IGraphicsCommand;
 import funk.gui.js.canvas.display.text.TextFormat;
 import funk.gui.js.canvas.display.text.TextLineMetrics;
-import funk.option.Any;
+import funk.gui.js.core.display.Graphics;
+import funk.gui.js.core.display.IGraphicsCommand;
 
 import js.w3c.html5.Canvas2DContext;
 import js.w3c.html5.Core;

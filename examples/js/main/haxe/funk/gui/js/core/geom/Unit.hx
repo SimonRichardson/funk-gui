@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.display;
+package funk.gui.js.core.geom;
 
 enum Unit {
 	em(value : Float);

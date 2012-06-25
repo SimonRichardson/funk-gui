@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.display;
+package funk.gui.js.dom.display;
 
 import funk.signal.Signal2;
 
@@ -9,8 +9,6 @@ import funk.gui.core.IComponent;
 import funk.gui.core.IComponentRoot;
 import funk.gui.core.IContainerObserver;
 
-import funk.gui.js.canvas.display.GraphicsComponentView;
-import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.event.Events;
 
 import js.Dom;
@@ -18,8 +16,8 @@ import js.w3c.DOMTypes;
 import js.w3c.html5.Canvas2DContext;
 import js.w3c.html5.Core;
 
-class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E>, 
-											implements IContainerObserver {
+class RenderManager<E : HTMLElement>  implements IComponentRenderManager<E>, 
+									  implements IContainerObserver {
 	
 	inline public static var ELEMENT_ID : String = "gui-hx";
 	
@@ -32,25 +30,16 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 	private var _window : Window;
 
 	private var _document : HTMLDocument;
-	
+
 	private var _context : E;
 
-	private var _canvas2dContext : CanvasRenderingContext2D;
-
-	private var _debugContext : E;
-
-	private var _debugCanvas2dContext : CanvasRenderingContext2D;
-
 	private var _painter : Painter;
-
-	private var _signal : ISignal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>;
 	
-	private var _highQuality : Bool;
+	private var _signal : ISignal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>;
 
 	private var _rootModified : Bool;
 
-	public function new(?highQuality : Bool = false){
-		_highQuality = highQuality;
+	public function new(){
 		_signal = new Signal2<IComponentRenderManager<E>, ComponentRenderManagerUpdateType>();
 	}
 	
@@ -72,23 +61,9 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 
 		_window = untyped __js__("window");
 		_document = CommonJS.getHtmlDocument();
+
+		_painter = new Painter();
 		
-		_context = CommonJS.newElement("canvas", _document);
-		_context.id = "gui-hx";
-		_context.className = "gui-hx-canvas";
-		
-		_document.body.appendChild(_context);
-
-		_canvas2dContext = _context.getContext("2d");
-
-		_debugContext = CommonJS.newElement("canvas", _document);
-		_debugContext.id = "gui-hx-debug";
-		_debugContext.className = "gui-hx-debug-canvas";
-
-		_debugCanvas2dContext = _debugContext.getContext("2d");
-
-		_painter = new Painter(_canvas2dContext, _debugCanvas2dContext, _highQuality);
-
 		resizeTo(_window.innerWidth, _window.innerHeight);
 	}
 	
@@ -106,50 +81,21 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 		var nw : Int = Std.int(width);
 		var nh : Int = Std.int(height);
 		
-		if(_highQuality) {
-			_context.style.width = nw + "px";
-			_context.style.height = nh + "px";
-
-			var mw : Int = Std.int(nw * 2);
-			var mh : Int = Std.int(nh * 2);
-
-			_canvas2dContext.canvas.width = mw;
-			_canvas2dContext.canvas.height = mh;
-
-			_canvas2dContext.scale(2, 2);
-			
-			_painter.bounds.width = mw;
-			_painter.bounds.height = mh;
-		} else {
-			_canvas2dContext.canvas.width = nw;
-			_canvas2dContext.canvas.height = nh;
-
-			_painter.bounds.width = nw;
-			_painter.bounds.height = nh;
-		}
-
-		if(_painter.debug) {
-			_debugCanvas2dContext.canvas.width = nw;
-			_debugCanvas2dContext.canvas.height = nh;
-		}
-
-		// Grab the iterator and invalidate them if we resize.
-		var itr : Iterator<Graphics> = _painter.iterator();
-		for(g in itr) {
-			g.invalidate();
-		}
 	}
 
 	public function onContainerUpdate(event : ContainerEvent) : Void {
 		switch(event.type) {
 			case ContainerEventType.COMPONENT_ADDED:
-				_rootModified = true;
+				var component : IComponent = event.component;
+				if(Std.is(component.view, GraphicsComponentView)) {
+					var graphicsComponentView : GraphicsComponentView = cast component.view;
+					_document.body.appendChild(graphicsComponentView.element);
+					_rootModified = true;
+				}
 		}
 	}
 	
 	private function render() : Void {
-		//untyped __js__("stats.begin();");
-
 		notify(PRE_RENDER);
 
 		// 1) Only re-add contents after the root has been modified.
@@ -171,8 +117,6 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 		_painter.render();
 
 		notify(POST_RENDER);
-
-		//untyped __js__ ("stats.end();");
 	}
 
 	private function notify(type : ComponentRenderManagerUpdateType) : Void {
@@ -184,18 +128,11 @@ class RenderManager<E : HTMLCanvasElement>  implements IComponentRenderManager<E
 	}
 
 	private function get_debug() : Bool {
-		return _painter.debug;
+		return false;
 	}
 
 	private function set_debug(value : Bool) : Bool {
-		_painter.debug = !_painter.debug;
-		if(_painter.debug) {
-			_document.body.appendChild(_debugContext);
-		} else {
-			_document.body.removeChild(_debugContext);
-		}
-
 		resizeTo(_window.innerWidth, _window.innerHeight);
-		return _painter.debug;
+		return false;
 	}
 }

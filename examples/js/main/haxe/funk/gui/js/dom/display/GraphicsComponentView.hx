@@ -1,4 +1,4 @@
-package funk.gui.js.canvas.display;
+package funk.gui.js.dom.display;
 
 import funk.collections.IList;
 import funk.collections.immutable.ListUtil;
@@ -8,14 +8,23 @@ import funk.gui.js.core.display.Graphics;
 import funk.gui.js.core.display.IGraphicsView;
 import funk.option.Any;
 
+import js.Dom;
+import js.w3c.DOMTypes;
+import js.w3c.html5.Canvas2DContext;
+import js.w3c.html5.Core;
+
 using funk.collections.immutable.ListUtil;
 using funk.option.Any;
 
 class GraphicsComponentView extends ComponentView, implements IGraphicsView {
 
+	public var element(getElement, never) : HTMLElement;
+
 	public var graphics(get_graphics, never) : Graphics;
 
 	public var graphicsList(getGraphicsList, never) : IList<Graphics>;
+
+	private var _element : HTMLElement;
 
 	private var _graphics : Graphics;
 
@@ -23,6 +32,8 @@ class GraphicsComponentView extends ComponentView, implements IGraphicsView {
 
 	public function new() {
 		super();
+
+		_element = CommonJS.newElement("div", CommonJS.getHtmlDocument());
 
 		_graphics = new Graphics(this);
 		_graphicsList = _graphics.toList();
@@ -58,6 +69,10 @@ class GraphicsComponentView extends ComponentView, implements IGraphicsView {
 
 			p = p.tail;
 		}
+	}
+
+	private function getElement() : HTMLElement {
+		return _element;
 	}
 
 	private function get_graphics() : Graphics {

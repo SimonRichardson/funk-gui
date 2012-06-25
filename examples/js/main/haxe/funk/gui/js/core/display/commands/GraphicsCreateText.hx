@@ -1,7 +1,7 @@
-package funk.gui.js.canvas.display.commands;
+package funk.gui.js.core.display.commands;
 
 import funk.gui.core.geom.Point;
-import funk.gui.js.canvas.display.IGraphicsCommand;
+import funk.gui.js.core.display.IGraphicsCommand;
 
 class GraphicsCreateText implements IGraphicsCommand {
 

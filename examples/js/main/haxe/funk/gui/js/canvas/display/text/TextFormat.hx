@@ -1,10 +1,10 @@
 package funk.gui.js.canvas.display.text;
 
 import funk.option.Any;
-import funk.gui.js.canvas.display.Unit;
+import funk.gui.js.core.geom.Unit;
 
 using funk.option.Any;
-using funk.gui.js.canvas.display.Unit;
+using funk.gui.js.core.geom.Unit;
 
 enum TextPosture {
 	ITALIC;
