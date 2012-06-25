@@ -38,8 +38,6 @@ class Main {
 				_root.add(button);
 			}
 		}
-
-		debug(true);
 		
 		// This is pure dirt!
 		untyped __js__("
