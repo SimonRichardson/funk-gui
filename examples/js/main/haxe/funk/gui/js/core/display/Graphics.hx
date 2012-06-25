@@ -106,19 +106,21 @@ class Graphics {
 	public function createText(text : String, font : String, rect : Rectangle) : Void {
 		invalidate();
 
-		_list = _list.append(new GraphicsCreateText(text, font, new Point(rect.x, rect.y)));
+		var x : Float = rect.x;
+		var y : Float = rect.y;
+		var w : Float = rect.width;
+		var h : Float = rect.height;
 
-		var width : Float = rect.width;
-		var height : Float = rect.height;
+		_list = _list.append(new GraphicsCreateText(text, font, new Point(x, y)));
 
 		// Expand the drawing rect.
-		var tx : Float = _tx + rect.x;
-		var ty : Float = _ty + rect.y;
+		var tx : Float = _tx + x;
+		var ty : Float = _ty + (y - h);
 
 		if(tx < _bounds.x) _bounds.x = tx;
 		if(ty < _bounds.y) _bounds.y = ty;
-		if(width > _bounds.width) _bounds.width = width;
-		if(height > _bounds.height) _bounds.height = height;
+		if(w > _bounds.width) _bounds.width = w;
+		if(h > _bounds.height) _bounds.height = h;
 	}
 
 	public function drawRect(x : Float, y : Float, width : Float, height : Float) : Void {
