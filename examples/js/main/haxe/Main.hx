@@ -7,10 +7,10 @@ import funk.gui.button.ToggleButton;
 import funk.gui.text.Label;
 import funk.gui.Root;
 import funk.gui.core.IComponentRoot;
-import funk.gui.js.core.display.RenderManager;
-import funk.gui.js.core.event.EventManager;
-import funk.gui.js.display.ButtonView;
-import funk.gui.js.display.LabelView;
+import funk.gui.js.canvas.display.RenderManager;
+import funk.gui.js.canvas.event.EventManager;
+import funk.gui.js.canvas.components.ButtonView;
+import funk.gui.js.canvas.components.LabelView;
 
 import js.w3c.html5.Core;
 
